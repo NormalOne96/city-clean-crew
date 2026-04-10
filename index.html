@@ -39,6 +39,14 @@ body{background:#87CEEB;font-family:'Nunito',sans-serif;overflow:hidden;width:10
 .style-btn.active{background:#FFD700;transform:scale(1.05);}
 .species-btn{font-family:'Fredoka One',cursive;font-size:12px;padding:8px 14px;border:3px solid #8B6914;border-radius:16px;background:#FFF8DC;cursor:pointer;transition:all 0.15s;text-align:center;line-height:1.2;}
 .species-btn.active{background:#FFD700;transform:scale(1.05);border-color:#5C3D00;}
+.job-select-btn{font-family:'Fredoka One',cursive;font-size:12px;padding:10px 14px;border:3px solid rgba(255,255,255,0.4);border-radius:16px;cursor:pointer;transition:all 0.2s;text-align:center;color:white;text-shadow:0 1px 3px rgba(0,0,0,0.4);min-width:80px;box-shadow:0 3px 8px rgba(0,0,0,0.25);}
+.job-select-btn .job-select-icon{font-size:28px;display:block;margin-bottom:4px;}
+.job-select-btn .job-select-desc{font-size:8px;opacity:0.8;display:block;margin-top:2px;}
+.job-select-btn.active{transform:scale(1.1);border-color:#FFD700;box-shadow:0 4px 12px rgba(0,0,0,0.35),0 0 0 3px rgba(255,215,0,0.5);}
+.job-select-btn.jb-garbage{background:linear-gradient(135deg,#E8A030,#B87018);}
+.job-select-btn.jb-recycle{background:linear-gradient(135deg,#30A850,#1A7838);}
+.job-select-btn.jb-repair{background:linear-gradient(135deg,#3088D0,#1860A8);}
+.job-select-btn.jb-walk{background:linear-gradient(135deg,#A060C0,#703898);}
 .name-input{font-family:'Fredoka One',cursive;font-size:16px;padding:6px 14px;border:3px solid #8B6914;border-radius:20px;background:#FFF8DC;color:#5C3D00;text-align:center;width:130px;outline:none;}
 #game-screen{background:transparent;justify-content:flex-start;align-items:flex-start;}
 #gameCanvas{position:absolute;top:0;left:0;width:100%;height:100%;}
@@ -296,6 +304,13 @@ body{background:#87CEEB;font-family:'Nunito',sans-serif;overflow:hidden;width:10
 <div class="option-row"><span class="option-label">Extra</span><div class="color-swatches" id="extrasRow"></div></div>
 </div>
 </div>
+<!-- JOB / PROFESSION SELECTOR -->
+<div style="width:100%;max-width:720px;padding:0 6px;">
+<div class="char-panel" style="width:100%;">
+<div style="font-family:'Fredoka One',cursive;font-size:clamp(14px,3vw,20px);color:#8B4513;text-align:center;margin-bottom:8px;">Choose Your Job!</div>
+<div id="jobSelectRow" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;"></div>
+</div>
+</div>
 <button class="clay-btn clay-btn-primary" onclick="startGame()" style="margin-top:6px;">Start Cleaning!</button>
 <button class="clay-btn clay-btn-secondary" onclick="showScreen('title-screen')" style="font-size:12px;padding:6px 20px;">Back</button>
 </div>
@@ -530,6 +545,7 @@ const P={
   UNIFORMS:['#FF8C00','#1E90FF','#228B22','#9370DB','#DC143C','#FFD700'],
   GLASSES_TYPES:['none','round','star','heart','square'],
   hatOn:false,
+  job:'garbage',
   get skinColors(){return this.species.startsWith('yeti')?this.SKIN_YETI:this.SKIN_HUMAN;},
   get isYeti(){return this.species.startsWith('yeti');},
   get isGirl(){return this.species.includes('girl');},
@@ -615,9 +631,23 @@ function buildCharUI(){
   // Extras
   const ex=document.getElementById('extrasRow');ex.innerHTML=`<button class="style-btn${P.freckles?' active':''}" onclick="toggleFreckles()">freckles</button>`;
   // Species buttons
-  const sp=document.querySelectorAll('.species-btn');
-  const types=['human_boy','human_girl','yeti_boy','yeti_girl'];
-  sp.forEach((b,i)=>b.classList.toggle('active',types[i]===P.species));
+  var sp=document.querySelectorAll('.species-btn');
+  var types=['human_boy','human_girl','yeti_boy','yeti_girl'];
+  sp.forEach(function(b,i){b.classList.toggle('active',types[i]===P.species);});
+  // Job selector
+  var jr=document.getElementById('jobSelectRow');
+  if(jr){
+    var jobs=[
+      {id:'garbage',icon:'🚛',name:'Trash Collector',desc:'Pick up garbage around the city',cls:'jb-garbage'},
+      {id:'recycle',icon:'♻️',name:'Recycler',desc:'Collect recyclables for the center',cls:'jb-recycle'},
+      {id:'repair',icon:'🔧',name:'Repair Crew',desc:'Fix pipes, hydrants & dams',cls:'jb-repair'},
+      {id:'walk',icon:'🚶',name:'City Ranger',desc:'Walk around, do everything!',cls:'jb-walk'},
+    ];
+    jr.innerHTML='';
+    jobs.forEach(function(j){
+      jr.innerHTML+='<div class="job-select-btn '+j.cls+(P.job===j.id?' active':'')+'" onclick="setJob(\''+j.id+'\')"><span class="job-select-icon">'+j.icon+'</span>'+j.name+'<span class="job-select-desc">'+j.desc+'</span></div>';
+    });
+  }
 }
 
 function setSpecies(s){P.species=s;P.skinIdx=0;
@@ -631,6 +661,7 @@ function setHairStyle(i){P.hairStyle=i;buildCharUI();Audio.play('click');}
 function setEyes(i){P.eyeIdx=i;buildCharUI();Audio.play('click');}
 function setUniform(i){P.uniformIdx=i;buildCharUI();Audio.play('click');}
 function toggleHat(){P.hatOn=!P.hatOn;buildCharUI();Audio.play('click');}
+function setJob(j){P.job=j;buildCharUI();Audio.play('click');}
 function setGlasses(i){P.glasses=i;buildCharUI();Audio.play('click');}
 function toggleFreckles(){P.freckles=!P.freckles;buildCharUI();Audio.play('click');}
 
@@ -1886,13 +1917,13 @@ function startGame(){
   Audio.init();Audio.play('click');
   if(!P.name||P.name==='Hero')P.name=localStorage.getItem('ccc_name')||'Hero';
   G.score=0;G.stars=0;G.combo=0;G.comboTimer=0;G.waterLevel=80;G.cleanLevel=30;
-  G.usedVehicles=new Set(['garbage']);G.vehicle='garbage';
+  G.vehicle=P.job||'garbage';G.usedVehicles=new Set([G.vehicle]);
   G.player={x:400,y:400,vx:0,vy:0};G.camera={x:400-canvas.width/2,y:400-canvas.height/2};
   G.keys={up:false,down:false,left:false,right:false};G.paused=false;
   G.exhaust=[];G.dustT=0;G.rt=0;G.running=false;
   G.yetisTalked=new Set();G.yetisHelped=0;G.treasuresFound=0;
   DayNight.init();genWorld();showScreen('game-screen');resize();setupInput();
-  ['garbage','recycle','repair','walk'].forEach(t=>document.getElementById('vbtn-'+t).classList.toggle('active',t==='garbage'));
+  ['garbage','recycle','repair','walk'].forEach(function(t){document.getElementById('vbtn-'+t).classList.toggle('active',t===G.vehicle);});
   G.running=true;lastTime=performance.now();requestAnimationFrame(gameLoop);
   Audio.startMusic();notify(`Welcome, ${P.name}!`);
   setTimeout(()=>showTutorial(),1500);
