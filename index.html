@@ -99,7 +99,11 @@ body{background:#87CEEB;font-family:'Nunito',sans-serif;overflow:hidden;width:10
 <div class="title-logo">City Clean<br>Crew!</div>
 <div class="title-subtitle">A YaYa Yetti Adventure!</div>
 <div class="title-trucks"><div class="title-truck">🚛</div><div class="title-truck">♻️</div><div class="title-truck">🔧</div><div class="title-truck">🦶</div></div>
-<button class="clay-btn clay-btn-primary" onclick="showCharSelect()">Play!</button>
+<div id="title-welcome" style="font-family:'Fredoka One',cursive;font-size:clamp(12px,2.5vw,18px);color:#5C3D00;position:relative;z-index:10;margin-bottom:4px;display:none;"></div>
+<div style="position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:6px;">
+<input class="name-input" id="playerNameInput" type="text" placeholder="Enter Your Name!" maxlength="12" style="font-size:clamp(14px,3vw,20px);width:clamp(160px,40vw,220px);padding:10px 16px;">
+<button class="clay-btn clay-btn-primary" onclick="doPlay()">Play!</button>
+</div>
 <button class="clay-btn clay-btn-secondary" onclick="showBadges()">My Badges</button>
 </div>
 
@@ -111,7 +115,7 @@ body{background:#87CEEB;font-family:'Nunito',sans-serif;overflow:hidden;width:10
 <!-- Preview -->
 <div class="char-panel" style="min-width:160px;display:flex;flex-direction:column;align-items:center;gap:8px;">
 <canvas id="charCanvas" width="200" height="240" style="border-radius:12px;width:200px;height:240px;"></canvas>
-<input class="name-input" id="playerNameInput" type="text" placeholder="Your Name!" maxlength="12">
+<div id="charNameLabel" style="font-family:'Fredoka One',cursive;font-size:14px;color:#8B4513;"></div>
 </div>
 <!-- Options -->
 <div class="char-panel" style="min-width:220px;max-width:400px;flex:1;">
@@ -1705,7 +1709,17 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>{if(s.classList.contains('active')){s.style.opacity='0';setTimeout(()=>{s.classList.remove('active');s.style.opacity='';},300);}});
   setTimeout(()=>{const t=document.getElementById(id);t.classList.add('active');t.style.opacity='0';requestAnimationFrame(()=>{t.style.opacity='1';});},300);
 }
-function showCharSelect(){Audio.play('click');stopCharPreview();showScreen('char-screen');buildCharUI();setTimeout(drawCharPreview,350);}
+function doPlay(){
+  var nameVal=document.getElementById('playerNameInput').value.trim();
+  if(!nameVal){document.getElementById('playerNameInput').focus();document.getElementById('playerNameInput').style.borderColor='#DC143C';setTimeout(function(){document.getElementById('playerNameInput').style.borderColor='#8B6914';},1500);return;}
+  P.name=nameVal;
+  localStorage.setItem('ccc_name',nameVal);
+  Audio.play('click');
+  showCharSelect();
+}
+function showCharSelect(){stopCharPreview();showScreen('char-screen');buildCharUI();
+  var lbl=document.getElementById('charNameLabel');if(lbl)lbl.textContent=P.name;
+  setTimeout(drawCharPreview,350);}
 function showBadges(){
   Audio.play('click');showScreen('badges-screen');
   const grid=document.getElementById('badgesGrid');grid.innerHTML='';
@@ -1757,7 +1771,7 @@ function toggleSound(){G.soundOn=!G.soundOn;Audio.enabled=G.soundOn;document.get
 // ======================================================
 function startGame(){
   Audio.init();Audio.play('click');
-  P.name=document.getElementById('playerNameInput').value||'Hero';
+  if(!P.name||P.name==='Hero')P.name=localStorage.getItem('ccc_name')||'Hero';
   G.score=0;G.stars=0;G.combo=0;G.comboTimer=0;G.waterLevel=80;G.cleanLevel=30;
   G.usedVehicles=new Set(['garbage']);G.vehicle='garbage';
   G.player={x:400,y:400,vx:0,vy:0};G.camera={x:400-canvas.width/2,y:400-canvas.height/2};
@@ -1774,7 +1788,30 @@ function startGame(){
 // ======================================================
 // CLOUDS
 // ======================================================
-(function(){const c=document.getElementById('titleClouds');for(let i=0;i<6;i++){const cl=document.createElement('div');cl.className='cloud';cl.style.cssText=`width:${80+Math.random()*120}px;height:${30+Math.random()*30}px;top:${Math.random()*80}%;animation-duration:${20+Math.random()*30}s;animation-delay:${-Math.random()*30}s;`;c.appendChild(cl);}})();
+// CLOUDS + INIT
+// ======================================================
+(function(){
+  // Clouds
+  var cc=document.getElementById('titleClouds');
+  for(var i=0;i<6;i++){var cl=document.createElement('div');cl.className='cloud';cl.style.cssText='width:'+(80+Math.random()*120)+'px;height:'+(30+Math.random()*30)+'px;top:'+(Math.random()*80)+'%;animation-duration:'+(20+Math.random()*30)+'s;animation-delay:'+(-Math.random()*30)+'s;';cc.appendChild(cl);}
+  // Load saved name
+  var savedName=localStorage.getItem('ccc_name');
+  var nameInput=document.getElementById('playerNameInput');
+  var welcome=document.getElementById('title-welcome');
+  if(savedName){
+    nameInput.value=savedName;
+    welcome.style.display='block';
+    welcome.textContent='Welcome back, '+savedName+'!';
+  }
+  // Update welcome on name input change
+  nameInput.addEventListener('input',function(){
+    var v=nameInput.value.trim();
+    if(v){welcome.style.display='block';welcome.textContent='Hey there, '+v+'!';}
+    else{welcome.style.display='none';}
+  });
+  // Allow Enter key to play
+  nameInput.addEventListener('keydown',function(e){if(e.key==='Enter')doPlay();});
+})();
 </script>
 </body>
 </html>
