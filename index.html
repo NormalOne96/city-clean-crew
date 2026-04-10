@@ -102,6 +102,59 @@ body{background:#87CEEB;font-family:'Nunito',sans-serif;overflow:hidden;width:10
 @keyframes badgeSpin{0%{transform:rotate(-10deg) scale(0.5);}100%{transform:rotate(0deg) scale(1);}}
 .badge-title{font-family:'Fredoka One',cursive;font-size:18px;color:#8B4513;margin:4px 0 2px;}
 
+/* === SPLASH === */
+#splash{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:linear-gradient(180deg,#87CEEB,#5CB85C);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.8s ease;}
+#splash.hide{opacity:0;pointer-events:none;}
+#splash .splash-logo{font-family:'Fredoka One',cursive;font-size:clamp(28px,8vw,56px);color:white;text-shadow:3px 3px 0 #8B4513;animation:titleBounce 2s ease-in-out infinite;}
+#splash .splash-sub{font-family:'Fredoka One',cursive;font-size:clamp(10px,2.5vw,16px);color:#FFD700;margin-top:8px;text-shadow:1px 1px 0 #8B4513;}
+#splash .splash-bar{width:120px;height:8px;background:#D4C08A;border-radius:4px;margin-top:16px;overflow:hidden;}
+#splash .splash-fill{height:100%;background:#FFD700;border-radius:4px;width:0%;transition:width 0.3s;}
+
+/* === XP BAR === */
+#xp-bar{position:absolute;top:42px;left:8px;z-index:100;pointer-events:none;}
+.xp-panel{background:rgba(255,252,220,0.9);border:2px solid #8B6914;border-radius:10px;padding:2px 8px;display:flex;align-items:center;gap:4px;font-family:'Fredoka One',cursive;font-size:10px;color:#5C3D00;}
+.xp-meter{width:clamp(50px,15vw,90px);height:8px;background:#D4C08A;border:1px solid #8B6914;border-radius:4px;overflow:hidden;}
+.xp-fill{height:100%;background:linear-gradient(90deg,#9370DB,#FF69B4);border-radius:4px;transition:width 0.4s;}
+#level-up-popup{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:350;background:linear-gradient(180deg,#9370DB,#6A3D9A);border:4px solid #FFD700;border-radius:24px;padding:20px 28px;text-align:center;color:white;box-shadow:0 0 40px rgba(147,112,219,0.6);transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;min-width:200px;}
+#level-up-popup.show{transform:translate(-50%,-50%) scale(1);pointer-events:all;}
+
+/* === SHOP === */
+#shop-screen{background:linear-gradient(180deg,#FFF0D0,#FFE5A0);}
+.shop-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:500px;padding:8px;overflow-y:auto;max-height:55vh;}
+.shop-item{background:var(--ui-bg);border:3px solid #8B6914;border-radius:14px;padding:10px;text-align:center;width:100px;cursor:pointer;transition:all 0.15s;box-shadow:0 3px 0 rgba(0,0,0,0.2);}
+.shop-item:hover{transform:translateY(-2px);box-shadow:0 5px 0 rgba(0,0,0,0.2);}
+.shop-item.owned{border-color:#228B22;background:rgba(144,238,144,0.3);}
+.shop-item .si-icon{font-size:28px;}
+.shop-item .si-name{font-family:'Fredoka One',cursive;font-size:10px;color:#5C3D00;margin:3px 0;}
+.shop-item .si-cost{font-family:'Fredoka One',cursive;font-size:9px;color:#8B6914;}
+
+/* === LEADERBOARD === */
+#lb-screen{background:linear-gradient(180deg,#E0F0FF,#C0D8F0);}
+.lb-list{max-width:320px;width:100%;max-height:50vh;overflow-y:auto;padding:8px;}
+.lb-entry{background:var(--ui-bg);border:2px solid #8B6914;border-radius:12px;padding:8px 14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;font-family:'Fredoka One',cursive;font-size:13px;color:#5C3D00;}
+.lb-entry.lb-top{background:linear-gradient(180deg,#FFD700,#FFA500);border-color:#8B4513;}
+
+/* === MINI-GAME OVERLAY === */
+#minigame-overlay{position:absolute;top:0;left:0;right:0;bottom:0;z-index:500;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;flex-direction:column;}
+#minigame-overlay.active{display:flex;}
+.mg-box{background:var(--ui-bg);border:4px solid #FFD700;border-radius:24px;padding:20px;text-align:center;max-width:360px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+.mg-title{font-family:'Fredoka One',cursive;font-size:20px;color:#8B4513;margin-bottom:10px;}
+.mg-bins{display:flex;gap:10px;justify-content:center;margin:12px 0;}
+.mg-bin{width:70px;height:80px;border:3px solid #8B6914;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;font-size:28px;}
+.mg-bin:hover{transform:scale(1.1);box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+.mg-bin.correct{background:rgba(50,205,50,0.3);border-color:#228B22;}
+.mg-bin.wrong{background:rgba(220,20,60,0.3);border-color:#DC143C;}
+.mg-item{font-size:36px;margin:8px 0;animation:mgBounce 0.5s ease;}
+@keyframes mgBounce{0%{transform:scale(0) rotate(-20deg);}100%{transform:scale(1) rotate(0);}}
+
+/* === ONBOARDING ARROW === */
+#guide-arrow{position:absolute;z-index:180;pointer-events:none;display:none;font-size:28px;animation:guideFloat 1s ease-in-out infinite;}
+#guide-arrow.active{display:block;}
+@keyframes guideFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+/* === JOB SWITCH FLASH === */
+#job-flash{position:absolute;top:0;left:0;right:0;bottom:0;z-index:150;pointer-events:none;opacity:0;transition:opacity 0.15s;}
+
 /* ============================================================
    RESPONSIVE: Mobile (<600px) — compact everything
    ============================================================ */
@@ -261,6 +314,9 @@ body{background:#87CEEB;font-family:'Nunito',sans-serif;overflow:hidden;width:10
 </style>
 </head>
 <body>
+<!-- SPLASH -->
+<div id="splash"><div class="splash-logo">City Clean Crew!</div><div class="splash-sub">A YaYa Yetti Adventure</div><div class="splash-bar"><div class="splash-fill" id="splashFill"></div></div></div>
+
 <!-- TITLE -->
 <div class="screen active" id="title-screen">
 <div class="title-clouds" id="titleClouds"></div>
@@ -272,7 +328,11 @@ body{background:#87CEEB;font-family:'Nunito',sans-serif;overflow:hidden;width:10
 <input class="name-input" id="playerNameInput" type="text" placeholder="Enter Your Name!" maxlength="12" style="font-size:clamp(14px,3vw,20px);width:clamp(160px,40vw,220px);padding:10px 16px;">
 <button class="clay-btn clay-btn-primary" onclick="doPlay()">Play!</button>
 </div>
-<button class="clay-btn clay-btn-secondary" onclick="showBadges()">My Badges</button>
+<div style="display:flex;gap:8px;position:relative;z-index:10;flex-wrap:wrap;justify-content:center;">
+<button class="clay-btn clay-btn-secondary" onclick="showBadges()">Badges</button>
+<button class="clay-btn clay-btn-secondary" onclick="showShop()">Shop</button>
+<button class="clay-btn clay-btn-secondary" onclick="showLeaderboard()">Scores</button>
+</div>
 </div>
 
 <!-- CHARACTER SELECT -->
@@ -358,6 +418,18 @@ body{background:#87CEEB;font-family:'Nunito',sans-serif;overflow:hidden;width:10
 <!-- ACTION -->
 <button id="action-btn" onclick="doAction()">DO IT!<br>⚡</button>
 
+<!-- XP BAR -->
+<div id="xp-bar"><div class="xp-panel">Lv<span id="levelDisp">1</span> <div class="xp-meter"><div class="xp-fill" id="xpFill" style="width:0%"></div></div></div></div>
+
+<!-- GUIDE ARROW -->
+<div id="guide-arrow">⬇️</div>
+<!-- JOB FLASH -->
+<div id="job-flash"></div>
+<!-- LEVEL UP -->
+<div id="level-up-popup"><div style="font-size:40px;">⬆️</div><div style="font-family:'Fredoka One',cursive;font-size:22px;margin:6px 0;">LEVEL UP!</div><div id="lvlUpText" style="font-size:13px;margin-bottom:10px;"></div><button class="clay-btn clay-btn-primary" onclick="closeLevelUp()" style="font-size:14px;padding:8px 24px;">Nice!</button></div>
+<!-- MINI-GAME -->
+<div id="minigame-overlay"><div class="mg-box"><div class="mg-title" id="mgTitle">Sort It!</div><div class="mg-item" id="mgItem">🍕</div><div class="mg-bins" id="mgBins"></div><div id="mgScore" style="font-family:'Fredoka One',cursive;font-size:14px;color:#5C3D00;margin-top:8px;"></div></div></div>
+
 <!-- POPUPS -->
 <div id="notification"></div>
 <div id="badge-popup"><span class="badge-emoji" id="badgeEmoji"></span><div class="badge-title" id="badgeTitle"></div><div class="badge-desc" id="badgeDesc"></div><button class="clay-btn clay-btn-primary" onclick="closeBadgePopup()" style="font-size:14px;padding:8px 24px;">Awesome!</button></div>
@@ -369,6 +441,21 @@ body{background:#87CEEB;font-family:'Nunito',sans-serif;overflow:hidden;width:10
 <div class="char-title">Your Badges</div>
 <div id="badgesGrid" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:400px;padding:10px;overflow-y:auto;max-height:55vh;"></div>
 <button class="clay-btn clay-btn-secondary" onclick="showScreen('title-screen')" style="margin-top:12px;">Back</button>
+</div>
+
+<!-- SHOP -->
+<div class="screen" id="shop-screen">
+<div class="char-title">Yeti Shop</div>
+<div id="shopCoins" style="font-family:'Fredoka One',cursive;font-size:18px;color:#5C3D00;margin-bottom:8px;"></div>
+<div class="shop-grid" id="shopGrid"></div>
+<button class="clay-btn clay-btn-secondary" onclick="showScreen('title-screen')" style="margin-top:10px;">Back</button>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="screen" id="lb-screen">
+<div class="char-title">Leaderboard</div>
+<div class="lb-list" id="lbList"></div>
+<button class="clay-btn clay-btn-secondary" onclick="showScreen('title-screen')" style="margin-top:10px;">Back</button>
 </div>
 
 <script>
@@ -570,6 +657,8 @@ let G={
   treasures:[],treasuresFound:0,
   // Speech bubbles
   speeches:[],
+  coins:parseInt(localStorage.getItem('ccc_coins')||'0'),
+  ownedItems:JSON.parse(localStorage.getItem('ccc_owned')||'[]'),
 };
 
 const canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d');
@@ -668,6 +757,271 @@ function toggleFreckles(){P.freckles=!P.freckles;buildCharUI();Audio.play('click
 // ======================================================
 // FUR DRAWING HELPERS (must be outside drawCharacter)
 // ======================================================
+// ======================================================
+// NEW SYSTEMS: XP, Save, Shop, Zones, Seasons, Mini-games
+// ======================================================
+
+// --- SPLASH SCREEN ---
+(function(){
+  var sf=document.getElementById('splashFill'),sp=document.getElementById('splash');
+  var p=0,si=setInterval(function(){p+=Math.random()*25+10;if(p>100)p=100;sf.style.width=p+'%';if(p>=100){clearInterval(si);setTimeout(function(){sp.classList.add('hide');setTimeout(function(){sp.style.display='none';},900);},400);}},200);
+})();
+
+// --- XP / LEVELING ---
+var XP={
+  xp:parseInt(localStorage.getItem('ccc_xp')||'0'),
+  level:parseInt(localStorage.getItem('ccc_level')||'1'),
+  xpForLevel:function(l){return l*80+20;},
+  add:function(amt){
+    this.xp+=amt;
+    while(this.xp>=this.xpForLevel(this.level)){
+      this.xp-=this.xpForLevel(this.level);
+      this.level++;
+      this.onLevelUp();
+    }
+    localStorage.setItem('ccc_xp',this.xp);
+    localStorage.setItem('ccc_level',this.level);
+  },
+  onLevelUp:function(){
+    var unlocks=LEVEL_UNLOCKS[this.level];
+    var txt='Level '+this.level+'!';
+    if(unlocks)txt+=' Unlocked: '+unlocks.name;
+    document.getElementById('lvlUpText').textContent=txt;
+    document.getElementById('level-up-popup').classList.add('show');
+    Audio.play('badge');Shake.add(0.5);
+    if(typeof navigator!=='undefined'&&navigator.vibrate)navigator.vibrate([50,30,80]);
+  },
+  getProgress:function(){return this.xp/this.xpForLevel(this.level);}
+};
+
+var LEVEL_UNLOCKS={
+  2:{name:'Silver Hair',type:'hair',value:'#C0C0C0'},
+  3:{name:'Star Glasses',type:'glasses'},
+  4:{name:'Flame Truck Skin',type:'skin',vehicle:'garbage',skin:'flame'},
+  5:{name:'Pink Fur Color',type:'fur',value:'#FFB3D9'},
+  6:{name:'Rainbow Recycle Skin',type:'skin',vehicle:'recycle',skin:'rainbow'},
+  7:{name:'Crown Hat',type:'hat'},
+  8:{name:'Gold Eyes',type:'eyes',value:'#FFD700'},
+  9:{name:'Ice Repair Skin',type:'skin',vehicle:'repair',skin:'ice'},
+  10:{name:'Party Hat',type:'hat'},
+  12:{name:'Galaxy Fur',type:'fur',value:'#4A0080'},
+  15:{name:'Diamond Badge',type:'badge'},
+};
+
+function closeLevelUp(){document.getElementById('level-up-popup').classList.remove('show');}
+
+// --- FULL SAVE/LOAD ---
+var SaveSystem={
+  save:function(){
+    if(!G.running)return;
+    var d={
+      score:G.score,stars:G.stars,vehicle:G.vehicle,
+      px:Math.round(G.player.x),py:Math.round(G.player.y),
+      waterLevel:G.waterLevel,cleanLevel:G.cleanLevel,
+      badges:[...G.badges],usedV:[...G.usedVehicles],
+      yetisTalked:[...G.yetisTalked],yetisHelped:G.yetisHelped,
+      treasuresFound:G.treasuresFound,coins:G.coins||0,
+      ownedItems:G.ownedItems||[],
+      xp:XP.xp,level:XP.level,
+      time:Date.now()
+    };
+    localStorage.setItem('ccc_save',JSON.stringify(d));
+  },
+  load:function(){
+    var s=localStorage.getItem('ccc_save');
+    if(!s)return false;
+    try{
+      var d=JSON.parse(s);
+      G.score=d.score||0;G.stars=d.stars||0;
+      G.coins=d.coins||0;G.ownedItems=d.ownedItems||[];
+      XP.xp=d.xp||0;XP.level=d.level||1;
+      return d;
+    }catch(e){return false;}
+  },
+  hasSave:function(){return!!localStorage.getItem('ccc_save');}
+};
+
+// Auto-save every 30 seconds
+setInterval(function(){SaveSystem.save();},30000);
+
+// --- SHOP ---
+var SHOP_ITEMS=[
+  {id:'scarf_red',name:'Red Scarf',icon:'🧣',cost:50,type:'accessory'},
+  {id:'backpack',name:'Backpack',icon:'🎒',cost:80,type:'accessory'},
+  {id:'sparkle',name:'Sparkle Trail',icon:'✨',cost:120,type:'effect'},
+  {id:'speed_boost',name:'Speed Shoes',icon:'👟',cost:100,type:'boost'},
+  {id:'magnet',name:'Item Magnet',icon:'🧲',cost:150,type:'boost'},
+  {id:'truck_flame',name:'Flame Truck',icon:'🔥🚛',cost:200,type:'skin'},
+  {id:'truck_rainbow',name:'Rainbow Recycle',icon:'🌈♻️',cost:200,type:'skin'},
+  {id:'truck_ice',name:'Ice Repair Van',icon:'❄️🔧',cost:200,type:'skin'},
+  {id:'hat_crown',name:'Gold Crown',icon:'👑',cost:300,type:'hat'},
+  {id:'hat_party',name:'Party Hat',icon:'🎉',cost:100,type:'hat'},
+  {id:'fur_galaxy',name:'Galaxy Fur',icon:'🌌',cost:250,type:'fur'},
+  {id:'sticker_star',name:'Star Sticker',icon:'⭐',cost:30,type:'sticker'},
+];
+
+function showShop(){
+  Audio.play('click');showScreen('shop-screen');
+  G.coins=G.coins||0;G.ownedItems=G.ownedItems||[];
+  document.getElementById('shopCoins').textContent='Coins: '+G.coins;
+  var g=document.getElementById('shopGrid');g.innerHTML='';
+  SHOP_ITEMS.forEach(function(it){
+    var owned=G.ownedItems.indexOf(it.id)>=0;
+    g.innerHTML+='<div class="shop-item'+(owned?' owned':'')+'" onclick="buyItem(\''+it.id+'\')"><div class="si-icon">'+it.icon+'</div><div class="si-name">'+it.name+'</div><div class="si-cost">'+(owned?'OWNED':it.cost+' coins')+'</div></div>';
+  });
+}
+
+function buyItem(id){
+  G.ownedItems=G.ownedItems||[];G.coins=G.coins||0;
+  if(G.ownedItems.indexOf(id)>=0){notify('Already owned!');return;}
+  var it=SHOP_ITEMS.find(function(i){return i.id===id;});
+  if(!it)return;
+  if(G.coins<it.cost){notify('Need more coins!');Audio.play('error');return;}
+  G.coins-=it.cost;G.ownedItems.push(id);
+  Audio.play('badge');notify('Bought '+it.name+'!');
+  if(typeof navigator!=='undefined'&&navigator.vibrate)navigator.vibrate(50);
+  SaveSystem.save();showShop();
+}
+
+// --- LEADERBOARD ---
+function showLeaderboard(){
+  Audio.play('click');showScreen('lb-screen');
+  var runs=JSON.parse(localStorage.getItem('ccc_runs')||'[]');
+  var list=document.getElementById('lbList');list.innerHTML='';
+  if(!runs.length){list.innerHTML='<div style="text-align:center;font-family:\'Fredoka One\',cursive;color:#5C3D00;padding:20px;">No runs yet! Play to set a score.</div>';return;}
+  runs.sort(function(a,b){return b.score-a.score;});
+  runs.slice(0,10).forEach(function(r,i){
+    var d=new Date(r.time);
+    list.innerHTML+='<div class="lb-entry'+(i===0?' lb-top':'')+'"><span>#'+(i+1)+' '+r.name+'</span><span>'+r.score+' pts (Lv'+r.level+')</span></div>';
+  });
+}
+
+function saveRun(){
+  var runs=JSON.parse(localStorage.getItem('ccc_runs')||'[]');
+  runs.push({name:P.name,score:G.score,level:XP.level,time:Date.now()});
+  if(runs.length>20)runs=runs.sort(function(a,b){return b.score-a.score;}).slice(0,20);
+  localStorage.setItem('ccc_runs',JSON.stringify(runs));
+}
+
+// --- WORLD ZONES ---
+var ZONES=[
+  {id:'downtown',x:0,y:0,w:700,h:600,color:'#8B8B7B',name:'Downtown'},
+  {id:'park',x:0,y:800,w:800,h:800,color:'#4CAF50',name:'Yeti Park'},
+  {id:'beach',x:1400,y:800,w:600,h:800,color:'#F4D03F',name:'Sandy Beach'},
+  {id:'snow',x:1400,y:0,w:600,h:600,color:'#E8F0FE',name:'Snowy Peak'},
+];
+
+function getZone(px,py){
+  for(var i=0;i<ZONES.length;i++){var z=ZONES[i];if(px>=z.x&&px<z.x+z.w&&py>=z.y&&py<z.y+z.h)return z;}
+  return null;
+}
+
+// --- SEASONAL ---
+var SEASON=(function(){
+  var m=new Date().getMonth();// 0-11
+  if(m>=2&&m<=4)return'spring';
+  if(m>=5&&m<=7)return'summer';
+  if(m>=8&&m<=10)return'fall';
+  return'winter';
+})();
+
+// --- STORY MISSIONS ---
+var STORY_MISSIONS=[
+  {id:'sm1',npc:'Mayor Fluffington',text:'The park fountain is broken! Fix 2 pipes near the park.',check:function(){return G.brokenPipes.filter(function(p){return p.fixed;}).length>=2;},reward:80},
+  {id:'sm2',npc:'Chef Snowball',text:'My restaurant is surrounded by trash! Pick up 8 items.',check:function(){return G.trashItems.filter(function(t){return t.collected;}).length>=8;},reward:100},
+  {id:'sm3',npc:'Teacher Icicle',text:'The school needs recycling! Collect 5 recyclables.',check:function(){return G.recycleItems.filter(function(r){return r.collected;}).length>=5;},reward:90},
+  {id:'sm4',npc:'Officer Frostbite',text:'3 hydrants are broken downtown! Fix them ASAP!',check:function(){return G.brokenHydrants.filter(function(h){return h.fixed;}).length>=3;},reward:120},
+  {id:'sm5',npc:'Grandma Yeti',text:'Talk to 5 yetis and check on the community.',check:function(){return G.yetisTalked.size>=5;},reward:70},
+  {id:'sm6',npc:'Explorer Kit',text:'Find 2 hidden treasures in the city!',check:function(){return G.treasuresFound>=2;},reward:150},
+];
+var currentStory=null;
+
+// --- MINI-GAME ---
+var MiniGame={
+  active:false,items:[],current:null,score:0,total:5,done:0,type:'trash',
+  TRASH_ITEMS:['🍕','🥤','👟','🍌','🧃','📦'],
+  RECYCLE_ITEMS:['🧴','📰','🥫','🍾','📦'],
+  REPAIR_ITEMS:['🔩','🔧','⚙️','🪛','🔨'],
+
+  start:function(type){
+    this.active=true;this.type=type;this.score=0;this.done=0;
+    G.paused=true;
+    document.getElementById('minigame-overlay').classList.add('active');
+    this.nextItem();
+  },
+  nextItem:function(){
+    if(this.done>=this.total){this.finish();return;}
+    var pool=this.type==='recycle'?this.RECYCLE_ITEMS:this.type==='repair'?this.REPAIR_ITEMS:this.TRASH_ITEMS;
+    // Mix in wrong items
+    var allPool=this.TRASH_ITEMS.concat(this.RECYCLE_ITEMS);
+    this.current={icon:pool[Math.floor(Math.random()*pool.length)],correct:this.type};
+    // Sometimes show wrong item
+    if(Math.random()<0.3){
+      var wrongPool=this.type==='trash'?this.RECYCLE_ITEMS:this.TRASH_ITEMS;
+      this.current={icon:wrongPool[Math.floor(Math.random()*wrongPool.length)],correct:this.type==='trash'?'recycle':'trash'};
+    }
+    document.getElementById('mgItem').textContent=this.current.icon;
+    document.getElementById('mgTitle').textContent='Sort: where does this go?';
+    document.getElementById('mgScore').textContent=this.score+'/'+this.total+' correct';
+    var bins=document.getElementById('mgBins');
+    bins.innerHTML='<div class="mg-bin" style="background:rgba(232,160,48,0.3);" onclick="MiniGame.pick(\'trash\')">🗑️<div style="font-size:9px;font-family:\'Fredoka One\',cursive;">Trash</div></div>'
+      +'<div class="mg-bin" style="background:rgba(48,168,80,0.3);" onclick="MiniGame.pick(\'recycle\')">♻️<div style="font-size:9px;font-family:\'Fredoka One\',cursive;">Recycle</div></div>';
+  },
+  pick:function(bin){
+    this.done++;
+    var correct=bin===this.current.correct;
+    if(correct){this.score++;Audio.play('pickup');}else{Audio.play('error');}
+    if(typeof navigator!=='undefined'&&navigator.vibrate)navigator.vibrate(correct?30:100);
+    // Flash bin
+    var bins=document.querySelectorAll('.mg-bin');
+    bins.forEach(function(b){b.classList.remove('correct','wrong');});
+    // Brief delay then next
+    var self=this;
+    setTimeout(function(){self.nextItem();},400);
+  },
+  finish:function(){
+    this.active=false;G.paused=false;
+    document.getElementById('minigame-overlay').classList.remove('active');
+    var bonus=this.score*15;
+    G.score+=bonus;G.coins=(G.coins||0)+this.score*5;
+    XP.add(this.score*8);
+    notify('Sorted! +'+bonus+'pts +'+this.score*5+' coins');
+    Audio.play('mission');
+    if(typeof navigator!=='undefined'&&navigator.vibrate)navigator.vibrate([30,20,30]);
+  }
+};
+
+// --- ONBOARDING GUIDE ---
+var Guide={
+  step:0,active:false,
+  start:function(){if(!G.firstPlay)return;this.active=true;this.step=0;this.update();},
+  update:function(){
+    if(!this.active)return;
+    var arrow=document.getElementById('guide-arrow');
+    // Point to nearest uncollected trash
+    var nearest=null,nd=9999;
+    G.trashItems.forEach(function(t){if(!t.collected){var d=dist(G.player,t);if(d<nd){nd=d;nearest=t;}}});
+    if(nearest&&nd>60){
+      var sx=nearest.x-G.camera.x,sy=nearest.y-G.camera.y-30;
+      arrow.style.left=sx+'px';arrow.style.top=sy+'px';
+      arrow.classList.add('active');
+    } else {
+      arrow.classList.remove('active');
+      if(G.trashItems.filter(function(t){return t.collected;}).length>=1)this.active=false;
+    }
+  }
+};
+
+// --- HAPTIC HELPER ---
+function haptic(ms){if(typeof navigator!=='undefined'&&navigator.vibrate)navigator.vibrate(ms||30);}
+
+// --- JOB SWITCH ANIMATION ---
+function jobFlash(color){
+  var f=document.getElementById('job-flash');
+  f.style.backgroundColor=color;f.style.opacity='0.3';
+  setTimeout(function(){f.style.opacity='0';},200);
+}
+
 // Enhanced fur rendering system
 function _furEdge(c,s,frame,furDk,cx,cy,rx,ry,count,len,spread){
   c.save();c.lineCap='round';
@@ -1313,9 +1667,12 @@ function spawnYetis(){
       turnCd:0,
       mood:'idle', // idle, walking, waving, cheering, requesting
       moodTimer:0,
-      hasRequest:Math.random()<0.2,
-      requestType:['trash','pipe','recycle'][Math.floor(Math.random()*3)],
+      hasRequest:Math.random()<0.35,
+      requestType:['trash','pipe','recycle','lost_item'][Math.floor(Math.random()*4)],
+      requestMsg:['Help! Trash here!','Pipe is leaking!','Need recycling!','Lost my toy!'][Math.floor(Math.random()*4)],
       talked:false,
+      name:['Fluffy','Snowball','Frosty','Icy','Chill','Breezy','Misty','Cloudy','Puffy','Snowy'][Math.floor(Math.random()*10)],
+      gratitude:['Yay! Thank you!','You are the best!','My hero!','Amazing work!','So helpful!'][Math.floor(Math.random()*5)],
       bobPhase:Math.random()*Math.PI*2,
       // Second yeti for couple/family
       companion:type==='couple'||type==='family'?{
@@ -1532,15 +1889,36 @@ const W={roads:[],buildings:[],trees:[],water:[],flowers:[],
 
 function genWorld(){
   W.roads=[];
-  for(let x=0;x<WW;x+=200)W.roads.push({x,y:0,w:40,h:WH,dir:'v'});
-  for(let y=0;y<WH;y+=200)W.roads.push({x:0,y,w:WW,h:40,dir:'h'});
+  for(var x2=0;x2<WW;x2+=200)W.roads.push({x:x2,y:0,w:40,h:WH,dir:'v'});
+  for(var y2=0;y2<WH;y2+=200)W.roads.push({x:0,y:y2,w:WW,h:40,dir:'h'});
   W.buildings=[];
-  const bc=['#F4A460','#DEB887','#CD853F','#D2691E','#A0522D','#87CEEB','#B0E0E6','#ADD8E6','#FF7F7F','#FFB6C1','#E6E6FA','#FFDAB9'];
-  const rc=['#DC143C','#B22222','#8B0000','#FF6347','#D2691E','#228B22','#006400','#2E8B57','#4169E1'];
-  for(let bx=60;bx<WW-200;bx+=200)for(let by=60;by<WH-200;by+=200)if(Math.random()>0.25)W.buildings.push({x:bx+Math.random()*40,y:by+Math.random()*40,w:80+Math.random()*70,h:60+Math.random()*90,color:bc[Math.floor(Math.random()*bc.length)],roofColor:rc[Math.floor(Math.random()*rc.length)],windows:Math.floor(Math.random()*6)+2,type:['house','shop','apartment','school'][Math.floor(Math.random()*4)]});
-  W.trees=[];for(let i=0;i<80;i++)W.trees.push({x:Math.random()*WW,y:Math.random()*WH,size:18+Math.random()*22,color:['#228B22','#2E8B57','#3CB371','#006400','#32CD32'][Math.floor(Math.random()*5)],sway:Math.random()*Math.PI*2});
-  W.flowers=[];for(let i=0;i<50;i++)W.flowers.push({x:Math.random()*WW,y:Math.random()*WH,color:['#FF69B4','#FFD700','#FF6347','#9370DB','#FF4500','#00CED1'][Math.floor(Math.random()*6)],size:3+Math.random()*4,phase:Math.random()*Math.PI*2});
+  var bc=['#F4A460','#DEB887','#CD853F','#D2691E','#A0522D','#87CEEB','#B0E0E6','#ADD8E6','#FF7F7F','#FFB6C1','#E6E6FA','#FFDAB9'];
+  var rc=['#DC143C','#B22222','#8B0000','#FF6347','#D2691E','#228B22','#006400','#2E8B57','#4169E1'];
+  for(var bx=60;bx<WW-200;bx+=200)for(var by=60;by<WH-200;by+=200)if(Math.random()>0.25){
+    var zone=getZone(bx,by);
+    var bColor=bc[Math.floor(Math.random()*bc.length)];
+    // Zone-specific building colors
+    if(zone&&zone.id==='snow')bColor=['#E8F0FE','#D0E4F0','#C0D8E8','#B8CCE0'][Math.floor(Math.random()*4)];
+    if(zone&&zone.id==='beach')bColor=['#FFEFD5','#FFE4B5','#FFDAB9','#FFF0DB'][Math.floor(Math.random()*4)];
+    if(zone&&zone.id==='downtown')bColor=['#C0C0C0','#A9A9A9','#B8B8B8','#D0D0D0'][Math.floor(Math.random()*4)];
+    W.buildings.push({x:bx+Math.random()*40,y:by+Math.random()*40,w:80+Math.random()*70,h:60+Math.random()*90,color:bColor,roofColor:rc[Math.floor(Math.random()*rc.length)],windows:Math.floor(Math.random()*6)+2,type:['house','shop','apartment','school'][Math.floor(Math.random()*4)],zone:zone?zone.id:'city'});
+  }
+  // Trees - seasonal colors
+  W.trees=[];
+  var treeColors=SEASON==='fall'?['#D2691E','#CD853F','#B8860B','#DAA520','#CC5500']:SEASON==='winter'?['#E8F0FE','#D0E4F0','#A0C8A0','#228B22']:['#228B22','#2E8B57','#3CB371','#006400','#32CD32'];
+  for(var i=0;i<80;i++){var tx=Math.random()*WW,ty=Math.random()*WH;var zone=getZone(tx,ty);
+    var tc=zone&&zone.id==='snow'?['#E8F0FE','#D0E4F0','#C8DCD0'][Math.floor(Math.random()*3)]:treeColors[Math.floor(Math.random()*treeColors.length)];
+    W.trees.push({x:tx,y:ty,size:18+Math.random()*22,color:tc,sway:Math.random()*Math.PI*2});}
+  // Flowers - more in park, seasonal
+  W.flowers=[];
+  var flowerColors=SEASON==='winter'?['#E8F0FE','#D0E4F0']:SEASON==='fall'?['#D2691E','#DAA520','#CD853F']:['#FF69B4','#FFD700','#FF6347','#9370DB','#FF4500','#00CED1'];
+  for(var i=0;i<(SEASON==='spring'?80:50);i++){var fx=Math.random()*WW,fy=Math.random()*WH;
+    W.flowers.push({x:fx,y:fy,color:flowerColors[Math.floor(Math.random()*flowerColors.length)],size:3+Math.random()*4,phase:Math.random()*Math.PI*2});}
   W.water=[{x:650,y:0,w:100,h:600},{x:650,y:560,w:700,h:100},{x:1250,y:560,w:100,h:500}];
+  // Home base building
+  W.homeBase={x:350,y:350,w:100,h:80};
+  // Initialize story mission
+  currentStory=STORY_MISSIONS[Math.floor(Math.random()*STORY_MISSIONS.length)];
   spawnItems();spawnYetis();spawnTreasures();
 }
 
@@ -1574,10 +1952,13 @@ const MISSIONS=[
 let curMission=null,compMissions=0;
 
 function updateMissions(){
-  const a=MISSIONS.filter(m=>!m._done);
-  if(!a.length){compMissions=0;MISSIONS.forEach(m=>delete m._done);}
+  var a=MISSIONS.filter(function(m){return!m._done;});
+  if(!a.length){compMissions=0;MISSIONS.forEach(function(m){delete m._done;});}
   curMission=a[Math.floor(Math.random()*a.length)]||MISSIONS[0];
-  document.getElementById('taskText').textContent=curMission.text;
+  // Show story mission if available, otherwise regular
+  var txt=curMission.text;
+  if(currentStory)txt=currentStory.npc+': '+currentStory.text;
+  document.getElementById('taskText').textContent=txt;
   document.getElementById('task-popup').style.display='block';
 }
 
@@ -1596,6 +1977,32 @@ function checkMissions(){
 function drawWorld(){
   const cW=canvas.width,cH=canvas.height,cx=G.camera.x+Shake.ox,cy=G.camera.y+Shake.oy,ft=G.rt;
   if(grassCache)ctx.drawImage(grassCache,-(cx%24),-(cy%24));
+
+  // Zone ground overlays
+  ZONES.forEach(function(z){
+    var zx=z.x-cx,zy=z.y-cy;
+    if(zx>cW+50||zx+z.w<-50||zy>cH+50||zy+z.h<-50)return;
+    ctx.save();ctx.globalAlpha=0.25;ctx.fillStyle=z.color;ctx.fillRect(zx,zy,z.w,z.h);ctx.restore();
+    // Zone label
+    ctx.save();ctx.globalAlpha=0.15;ctx.font='bold 24px "Fredoka One",sans-serif';ctx.fillStyle='#000';ctx.textAlign='center';
+    ctx.fillText(z.name,zx+z.w/2,zy+30);ctx.restore();
+  });
+
+  // Home base
+  if(W.homeBase){var hbx=W.homeBase.x-cx,hby=W.homeBase.y-cy;
+    if(hbx>-120&&hbx<cW+120&&hby>-120&&hby<cH+120){
+      ctx.save();ctx.shadowColor='rgba(255,215,0,0.3)';ctx.shadowBlur=15;
+      clayRect(ctx,hbx,hby,W.homeBase.w,W.homeBase.h,12,'#8B6914',3);ctx.restore();
+      clayRect(ctx,hbx-4,hby-12,W.homeBase.w+8,16,6,'#5C3D00',2);
+      ctx.font='bold 12px "Fredoka One",sans-serif';ctx.fillStyle='white';ctx.textAlign='center';
+      ctx.strokeStyle='rgba(0,0,0,0.3)';ctx.lineWidth=2;ctx.strokeText('HOME',hbx+50,hby+45);ctx.fillText('HOME',hbx+50,hby+45);
+      ctx.font='18px Arial';ctx.fillText('🏠',hbx+50,hby+30);
+    }
+  }
+
+  // Seasonal particles
+  if(SEASON==='winter'&&Math.random()<0.05){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.beginPath();ctx.arc(Math.random()*cW,Math.random()*cH*0.5,2+Math.random()*2,0,Math.PI*2);ctx.fill();}
+  if(SEASON==='fall'&&Math.random()<0.03){ctx.fillStyle='#CD853F';ctx.save();ctx.translate(Math.random()*cW,(ft*0.02+Math.random()*cH)%cH);ctx.rotate(ft*0.002);ctx.fillRect(-3,-1,6,2);ctx.restore();}
 
   // Flowers
   W.flowers.forEach(f=>{const fx=f.x-cx,fy=f.y-cy;if(fx<-20||fx>cW+20||fy<-20||fy>cH+20)return;const sw=Math.sin(ft*0.002+f.phase)*2;ctx.strokeStyle='#228B22';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(fx,fy+6);ctx.quadraticCurveTo(fx+sw,fy,fx+sw*0.5,fy-4);ctx.stroke();ctx.fillStyle=f.color;for(let p=0;p<5;p++){const a=(p/5)*Math.PI*2+ft*0.001;ctx.beginPath();ctx.arc(fx+sw*0.5+Math.cos(a)*f.size*0.6,fy-4+Math.sin(a)*f.size*0.6,f.size*0.4,0,Math.PI*2);ctx.fill();}ctx.fillStyle='#FFD700';ctx.beginPath();ctx.arc(fx+sw*0.5,fy-4,f.size*0.25,0,Math.PI*2);ctx.fill();});
@@ -1770,49 +2177,64 @@ function update(dt){
 
 function autoCollect(item,type){
   item.collected=true;G.combo++;G.comboTimer=2500;
-  const pts=10*G.combo;G.score+=pts;
-  const sx=item.x-G.camera.x,sy=item.y-G.camera.y;
+  var pts=10*G.combo;G.score+=pts;
+  G.coins=(G.coins||0)+Math.ceil(pts/5);
+  XP.add(pts);haptic(25+G.combo*10);
+  var sx=item.x-G.camera.x,sy=item.y-G.camera.y;
   Particles.emit(sx,sy,type==='trash'?'🗑️':'♻️',5+G.combo,50);
-  notify(`+${pts}${G.combo>1?' '+G.combo+'x!':''}`);
+  notify('+'+pts+(G.combo>1?' '+G.combo+'x!':''));
   Audio.play(type==='trash'?'pickup':'recycle');
   if(G.combo>1)Audio.play('combo');Shake.add(0.1+G.combo*0.03);
   if(type==='trash')earnBadge('first_trash');if(type==='recycle')earnBadge('first_recycle');
-  // Nearby yetis cheer
-  G.yetis.forEach(y=>{if(dist(item,y)<120){y.mood='cheering';y.moodTimer=2000;Audio.play('yeti_happy');}});
-  setTimeout(()=>{item.collected=false;item.x=50+Math.random()*(WW-100);item.y=50+Math.random()*(WH-100);},12000);
+  G.yetis.forEach(function(y){if(dist(item,y)<120){y.mood='cheering';y.moodTimer=2000;}});
+  setTimeout(function(){item.collected=false;item.x=50+Math.random()*(WW-100);item.y=50+Math.random()*(WH-100);},12000);
 }
 
 function doAction(){
-  Audio.play('click');
-  // Check yeti interaction first
-  const nearYeti=G.yetis.find(y=>dist(G.player,y)<80);
+  Audio.play('click');haptic(20);
+  // Check mini-game zones (special buildings)
+  var p=G.player;
+  if(dist(p,{x:W.dump.x+70,y:W.dump.y+60})<80&&G.vehicle==='garbage'){MiniGame.start('trash');return;}
+  if(dist(p,{x:W.recycleCenter.x+60,y:W.recycleCenter.y+50})<80&&G.vehicle==='recycle'){MiniGame.start('recycle');return;}
+  // Home base
+  if(W.homeBase&&dist(p,{x:W.homeBase.x+50,y:W.homeBase.y+40})<80){
+    SaveSystem.save();
+    notify('Home! Saved! Lv'+XP.level+' | '+G.coins+' coins');haptic([30,20,30]);return;
+  }
+  // Check yeti interaction
+  var nearYeti=G.yetis.find(function(y){return dist(G.player,y)<80;});
   if(nearYeti){
     if(!G.yetisTalked.has(nearYeti.id)){
       G.yetisTalked.add(nearYeti.id);nearYeti.talked=true;
       nearYeti.mood='cheering';nearYeti.moodTimer=3000;
-      G.score+=15;
+      var yPts=15;G.score+=yPts;G.coins=(G.coins||0)+5;XP.add(yPts);
       Audio.play(nearYeti.type==='child'?'yeti_child':'yeti_wave');
-      const msgs=['Hi friend!','Thanks for cleaning!','You\'re the best!','Yay clean city!','Hello!','Keep going!'];
-      notify(msgs[Math.floor(Math.random()*msgs.length)]+' +15pts');
-      Shake.add(0.1);
-      if(nearYeti.hasRequest){G.yetisHelped++;nearYeti.hasRequest=false;G.score+=25;Audio.play('yeti_cheer');notify('Helped a yeti! +25pts');}
+      notify(nearYeti.name+': Hi friend! +'+yPts+'pts');
+      Shake.add(0.1);haptic(30);
+      if(nearYeti.hasRequest){
+        G.yetisHelped++;nearYeti.hasRequest=false;
+        var rPts=30;G.score+=rPts;G.coins=(G.coins||0)+10;XP.add(rPts);
+        Audio.play('yeti_cheer');
+        notify(nearYeti.name+': '+nearYeti.gratitude+' +'+rPts+'pts');
+        Particles.emit(canvas.width/2,canvas.height/2,'💛',6,50);haptic([30,20,50]);
+      }
     } else {
       nearYeti.mood='waving';nearYeti.moodTimer=1500;
-      Audio.play('yeti_wave');
-      notify('Hey again!');
+      Audio.play('yeti_wave');notify(nearYeti.name+' waves!');
     }
     return;
   }
   // Repair
-  const broken=[...G.brokenPipes,...G.brokenDams,...G.brokenHydrants].filter(b=>!b.fixed);
-  const near=broken.find(b=>dist(G.player,b)<80);
+  var broken=[...G.brokenPipes,...G.brokenDams,...G.brokenHydrants].filter(function(b){return!b.fixed;});
+  var near=broken.find(function(b){return dist(G.player,b)<80;});
   if(near&&G.vehicle==='repair'){
-    near.fixed=true;G.score+=30;G.combo++;G.comboTimer=2500;
+    near.fixed=true;var fPts=30;G.score+=fPts;G.combo++;G.comboTimer=2500;
+    G.coins=(G.coins||0)+Math.ceil(fPts/3);XP.add(fPts);
     Particles.emit(canvas.width/2,canvas.height/2,'🔧',8,70);
     Particles.emit(canvas.width/2,canvas.height/2,'✨',5,40);
-    notify('Fixed! +30pts');Audio.play('fix');Shake.add(0.3);earnBadge('first_repair');
-    G.yetis.forEach(y=>{if(dist(near,y)<120){y.mood='cheering';y.moodTimer=2000;}});
-    setTimeout(()=>{near.fixed=false;near.x=50+Math.random()*(WW-100);near.y=50+Math.random()*(WH-100);},18000);
+    notify('Fixed! +'+fPts+'pts');Audio.play('fix');Shake.add(0.3);haptic([40,20,60]);earnBadge('first_repair');
+    G.yetis.forEach(function(y){if(dist(near,y)<120){y.mood='cheering';y.moodTimer=2000;}});
+    setTimeout(function(){near.fixed=false;near.x=50+Math.random()*(WW-100);near.y=50+Math.random()*(WH-100);},18000);
   } else if(near){notify('Switch to Repair Van!');Audio.play('error');}
   else{notify('Nothing nearby! Keep exploring!');}
 }
@@ -1827,13 +2249,28 @@ function updateHUD(){
   document.getElementById('trashMeter').style.width=G.cleanLevel+'%';
   document.getElementById('waterPanel').classList.toggle('warning',G.waterLevel<25);
   document.getElementById('trashPanel').classList.toggle('warning',G.cleanLevel<20);
-  const wf=document.getElementById('waterMeter');
+  var wf=document.getElementById('waterMeter');
   wf.style.background=G.waterLevel<25?'linear-gradient(90deg,#DC143C,#FF6347)':G.waterLevel<50?'linear-gradient(90deg,#FFA500,#FFD700)':'linear-gradient(90deg,#1E90FF,#00CED1)';
+  // XP bar
+  document.getElementById('levelDisp').textContent=XP.level;
+  document.getElementById('xpFill').style.width=(XP.getProgress()*100)+'%';
+  // Guide arrow
+  if(Guide.active)Guide.update();
+  // Story mission check
+  if(currentStory&&currentStory.check()){
+    G.score+=currentStory.reward;G.coins=(G.coins||0)+currentStory.reward;
+    XP.add(currentStory.reward);
+    notify(currentStory.npc+': Thanks! +'+currentStory.reward+'!');
+    Audio.play('mission');Shake.add(0.3);haptic([50,30,80]);
+    currentStory=STORY_MISSIONS[Math.floor(Math.random()*STORY_MISSIONS.length)];
+  }
 }
 
 function switchVehicle(v){
   G.vehicle=v;G.usedVehicles.add(v);
-  ['garbage','recycle','repair','walk'].forEach(t=>document.getElementById('vbtn-'+t).classList.toggle('active',t===v));
+  ['garbage','recycle','repair','walk'].forEach(function(t){document.getElementById('vbtn-'+t).classList.toggle('active',t===v);});
+  var colors={garbage:'#E8A030',recycle:'#30A850',repair:'#3088D0',walk:'#A060C0'};
+  jobFlash(colors[v]||'#FFD700');haptic(40);
   notify({garbage:'Garbage Truck',recycle:'Recycle Truck',repair:'Repair Van',walk:'Walking'}[v]+'!');Audio.play('switch');
 }
 
@@ -1916,17 +2353,24 @@ function toggleSound(){G.soundOn=!G.soundOn;Audio.enabled=G.soundOn;if(G.soundOn
 function startGame(){
   Audio.init();Audio.play('click');
   if(!P.name||P.name==='Hero')P.name=localStorage.getItem('ccc_name')||'Hero';
+  // Load save if exists
+  var saved=SaveSystem.load();
   G.score=0;G.stars=0;G.combo=0;G.comboTimer=0;G.waterLevel=80;G.cleanLevel=30;
   G.vehicle=P.job||'garbage';G.usedVehicles=new Set([G.vehicle]);
   G.player={x:400,y:400,vx:0,vy:0};G.camera={x:400-canvas.width/2,y:400-canvas.height/2};
   G.keys={up:false,down:false,left:false,right:false};G.paused=false;
   G.exhaust=[];G.dustT=0;G.rt=0;G.running=false;
   G.yetisTalked=new Set();G.yetisHelped=0;G.treasuresFound=0;
+  if(saved){G.coins=saved.coins||0;G.ownedItems=saved.ownedItems||[];}
   DayNight.init();genWorld();showScreen('game-screen');resize();setupInput();
   ['garbage','recycle','repair','walk'].forEach(function(t){document.getElementById('vbtn-'+t).classList.toggle('active',t===G.vehicle);});
   G.running=true;lastTime=performance.now();requestAnimationFrame(gameLoop);
-  Audio.startMusic();notify(`Welcome, ${P.name}!`);
-  setTimeout(()=>showTutorial(),1500);
+  Audio.startMusic();
+  var seasonMsg={spring:'Spring blooms!',summer:'Summer sun!',fall:'Autumn leaves!',winter:'Winter wonderland!'};
+  notify('Welcome '+P.name+'! '+seasonMsg[SEASON]);
+  setTimeout(function(){showTutorial();Guide.start();},1500);
+  // Save run on page close
+  window.addEventListener('beforeunload',function(){SaveSystem.save();saveRun();});
 }
 
 // ======================================================
