@@ -444,52 +444,55 @@ function setGlasses(i){P.glasses=i;buildCharUI();Audio.play('click');}
 function toggleFreckles(){P.freckles=!P.freckles;buildCharUI();Audio.play('click');}
 
 // ======================================================
+// FUR DRAWING HELPERS (must be outside drawCharacter)
+// ======================================================
+function _furEdge(c,s,frame,furDk,cx,cy,rx,ry,count,len,spread){
+  c.save();c.strokeStyle=furDk;c.lineWidth=1.2*s;c.lineCap='round';
+  for(var i=0;i<count;i++){
+    var a=(i/count)*Math.PI*2+Math.sin(frame*0.02+i)*0.1;
+    var bx2=cx+Math.cos(a)*rx*s,by2=cy+Math.sin(a)*ry*s;
+    var ex2=bx2+Math.cos(a+spread)*len*s,ey3=by2+Math.sin(a+spread)*len*s;
+    c.beginPath();c.moveTo(bx2,by2);c.quadraticCurveTo(bx2+Math.cos(a)*len*0.3*s,by2+Math.sin(a)*len*0.3*s,ex2,ey3);c.stroke();
+  }
+  c.restore();
+}
+function _furFill(c,s,cx,cy,rx,ry,baseC,count){
+  c.save();
+  for(var i=0;i<count;i++){
+    var a=Math.random()*Math.PI*2;
+    var d=Math.random()*0.85;
+    var fx2=cx+Math.cos(a)*rx*d*s,fy2=cy+Math.sin(a)*ry*d*s;
+    var len2=(3+Math.random()*5)*s;
+    var fa=a+Math.PI*0.5+(Math.random()-0.5)*0.8;
+    c.strokeStyle=Math.random()>0.5?lt(baseC,Math.floor(15+Math.random()*25)):dk(baseC,Math.floor(10+Math.random()*15));
+    c.lineWidth=(0.8+Math.random()*0.8)*s;c.lineCap='round';
+    c.beginPath();c.moveTo(fx2,fy2);c.lineTo(fx2+Math.cos(fa)*len2,fy2+Math.sin(fa)*len2);c.stroke();
+  }
+  c.restore();
+}
+
+// ======================================================
 // CHARACTER DRAWING
 // ======================================================
 function drawCharacter(c,x,y,s,opts,frame,moving){
-  const {species,skinC,hairC,hairStyle,eyeC,uniformC,glasses,freckles}=opts;
-  const isYeti=species.startsWith('yeti');
-  const isGirl=species.includes('girl');
-  const bob=Math.sin(frame*0.08)*2*s;
-  const mvB=moving?Math.sin(frame*0.2)*3*s:0;
-  const sq=moving?1+Math.sin(frame*0.2)*0.04:1;
-  const st=moving?1-Math.sin(frame*0.2)*0.04:1;
+  var species=opts.species,skinC=opts.skinC,hairC=opts.hairC,hairStyle=opts.hairStyle;
+  var eyeC=opts.eyeC,uniformC=opts.uniformC,glasses=opts.glasses,freckles=opts.freckles;
+  var isYeti=species.startsWith('yeti');
+  var isGirl=species.includes('girl');
+  var bob=Math.sin(frame*0.08)*2*s;
+  var mvB=moving?Math.sin(frame*0.2)*3*s:0;
+  var sq=moving?1+Math.sin(frame*0.2)*0.04:1;
+  var st=moving?1-Math.sin(frame*0.2)*0.04:1;
 
   c.save();c.translate(x,y);c.scale(sq,st);c.translate(-x,-y);
 
   // Shadow
   c.save();c.globalAlpha=0.2;c.fillStyle='#000';c.beginPath();c.ellipse(x,y+54*s,20*s,5*s,0,0,Math.PI*2);c.fill();c.restore();
-  const yb=y+bob+mvB;
+  var yb=y+bob+mvB;
 
   if(isYeti){
     // === DETAILED YETI CHARACTER ===
-    const furDk=dk(skinC,25),furLt=lt(skinC,35),furMd=skinC;
-    // Helper: draw fur edge tufts along a curve
-    function furEdge(cx,cy,rx,ry,count,len,spread){
-      c.save();c.strokeStyle=furDk;c.lineWidth=1.2*s;c.lineCap='round';
-      for(let i=0;i<count;i++){
-        const a=(i/count)*Math.PI*2+Math.sin(frame*0.02+i)*0.1;
-        const bx=cx+Math.cos(a)*rx*s,by=cy+Math.sin(a)*ry*s;
-        const ex=bx+Math.cos(a+spread)*len*s,ey2=by+Math.sin(a+spread)*len*s;
-        c.beginPath();c.moveTo(bx,by);c.quadraticCurveTo(bx+Math.cos(a)*len*0.3*s,by+Math.sin(a)*len*0.3*s,ex,ey2);c.stroke();
-      }
-      c.restore();
-    }
-    // Helper: fill with fur texture strokes
-    function furFill(cx,cy,rx,ry,baseC,count){
-      c.save();
-      for(let i=0;i<count;i++){
-        const a=Math.random()*Math.PI*2;
-        const d=Math.random()*0.85;
-        const fx=cx+Math.cos(a)*rx*d*s,fy=cy+Math.sin(a)*ry*d*s;
-        const len=(3+Math.random()*5)*s;
-        const fa=a+Math.PI*0.5+(Math.random()-0.5)*0.8;
-        c.strokeStyle=Math.random()>0.5?lt(baseC,15+Math.random()*25):dk(baseC,10+Math.random()*15);
-        c.lineWidth=(0.8+Math.random()*0.8)*s;c.lineCap='round';
-        c.beginPath();c.moveTo(fx,fy);c.lineTo(fx+Math.cos(fa)*len,fy+Math.sin(fa)*len);c.stroke();
-      }
-      c.restore();
-    }
+    var furDk=dk(skinC,25),furLt=lt(skinC,35),furMd=skinC;
 
     // -- BODY (pear-shaped) --
     // Body base shape
@@ -507,7 +510,7 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
     c.strokeStyle=furDk;c.lineWidth=2*s;c.stroke();
     c.restore();
     // Body fur texture
-    furFill(x,yb+30*s,24,26,skinC,40);
+    _furFill(c,s,x,yb+30*s,24,26,skinC,40);
     // Belly patch (lighter oval with soft edge)
     c.save();
     const bellyG=c.createRadialGradient(x,yb+28*s,2*s,x,yb+30*s,16*s);
@@ -515,7 +518,7 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
     c.fillStyle=bellyG;c.beginPath();c.ellipse(x,yb+30*s,14*s,18*s,0,0,Math.PI*2);c.fill();
     c.restore();
     // Body fur edge tufts
-    furEdge(x,yb+30*s,26,28,20,6,0.3);
+    _furEdge(c,s,frame,furDk,x,yb+30*s,26,28,20,6,0.3);
 
     // -- LEGS (chunky, rounded) --
     [-1,1].forEach(side=>{
@@ -524,7 +527,7 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
       legG.addColorStop(0,furLt);legG.addColorStop(1,furDk);
       c.fillStyle=legG;c.beginPath();c.ellipse(lx,ly,9*s,12*s,side*0.1,0,Math.PI*2);c.fill();
       c.strokeStyle=furDk;c.lineWidth=1.5*s;c.stroke();
-      furFill(lx,ly,8,10,skinC,12);
+      _furFill(c,s,lx,ly,8,10,skinC,12);
       // Big feet with toes
       const fG=c.createRadialGradient(lx+side*2*s,yb+62*s,1*s,lx+side*2*s,yb+63*s,10*s);
       fG.addColorStop(0,lt(skinC,15));fG.addColorStop(1,dk(skinC,25));
@@ -545,7 +548,7 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
       armG.addColorStop(0,furLt);armG.addColorStop(1,furDk);
       c.fillStyle=armG;c.beginPath();c.ellipse(ax,ay,9*s,16*s,side*0.2,0,Math.PI*2);c.fill();
       c.strokeStyle=furDk;c.lineWidth=1.5*s;c.stroke();
-      furFill(ax,ay,8,14,skinC,15);
+      _furFill(c,s,ax,ay,8,14,skinC,15);
       // Paw/hand
       c.fillStyle=dk(skinC,15);c.beginPath();c.ellipse(ax+side*2*s,ay+14*s,7*s,5*s,side*0.3,0,Math.PI*2);c.fill();
       c.strokeStyle=dk(skinC,35);c.lineWidth=1*s;c.stroke();
@@ -586,9 +589,9 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
     c.strokeStyle=furDk;c.lineWidth=2*s;c.stroke();
     c.restore();
     // Head fur texture
-    furFill(x,yb-4*s,24,23,skinC,35);
+    _furFill(c,s,x,yb-4*s,24,23,skinC,35);
     // Head fur edge tufts
-    furEdge(x,yb-4*s,25,24,16,5,0.2);
+    _furEdge(c,s,frame,furDk,x,yb-4*s,25,24,16,5,0.2);
     // Head highlight (rim light)
     c.save();c.globalAlpha=0.18;c.strokeStyle='#fff';c.lineWidth=2.5*s;
     c.beginPath();c.arc(x,yb-4*s,23*s,-Math.PI*0.85,-Math.PI*0.15);c.stroke();c.restore();
@@ -598,7 +601,7 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
       const earX=x+side*22*s,earY=yb-18*s;
       // Outer ear
       clayCirc(c,earX,earY,8*s,9*s,skinC,2*s);
-      furFill(earX,earY,6,7,skinC,8);
+      _furFill(c,s,earX,earY,6,7,skinC,8);
       // Inner ear
       c.save();
       const earIG=c.createRadialGradient(earX,earY,1*s,earX,earY,5*s);
@@ -917,17 +920,19 @@ function charOpts(){
   return{species:P.species,skinC:P.skinColors[P.skinIdx],hairC:P.HAIR[P.hairIdx],hairStyle:P.hairStyle,eyeC:P.EYES[P.eyeIdx],uniformC:P.UNIFORMS[P.uniformIdx],glasses:P.glasses,freckles:P.freckles};
 }
 
-let charPreviewRAF=0;
+var charPreviewRAF=0;
 function drawCharPreview(){
   cancelAnimationFrame(charPreviewRAF);
   function loop(){
-    chx.clearRect(0,0,200,240);
-    drawCharacter(chx,100,95,1.3,charOpts(),Date.now()/100,false);
+    try{
+      chx.clearRect(0,0,200,240);
+      drawCharacter(chx,100,95,1.3,charOpts(),Date.now()/100,false);
+    }catch(e){console.error('char draw error:',e);}
     charPreviewRAF=requestAnimationFrame(loop);
   }
   loop();
 }
-function stopCharPreview(){cancelAnimationFrame(charPreviewRAF);}
+function stopCharPreview(){cancelAnimationFrame(charPreviewRAF);charPreviewRAF=0;}
 
 // ======================================================
 // YETI NPC SYSTEM
