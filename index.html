@@ -566,7 +566,7 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
 
     // -- VEST/UNIFORM --
     c.save();c.globalAlpha=0.75;
-    const ug=c.createLinearGradient(x-18*s,yb+12*s,x+18*s,yb+42*s);
+    var ug=c.createLinearGradient(x-18*s,yb+12*s,x+18*s,yb+42*s);
     ug.addColorStop(0,lt(uniformC,25));ug.addColorStop(0.5,uniformC);ug.addColorStop(1,dk(uniformC,20));
     c.fillStyle=ug;
     c.beginPath();c.moveTo(x-16*s,yb+12*s);
@@ -576,9 +576,36 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
     c.quadraticCurveTo(x,yb+8*s,x-16*s,yb+12*s);
     c.fill();
     c.strokeStyle=dk(uniformC,45);c.lineWidth=2*s;c.stroke();
-    // Vest buttons
-    c.fillStyle='rgba(255,255,255,0.5)';
-    for(let i=0;i<3;i++){c.beginPath();c.arc(x,yb+20*s+i*8*s,2*s,0,Math.PI*2);c.fill();}
+    if(isGirl){
+      // Yeti girl: cute tutu/skirt over vest bottom
+      var tutuG=c.createLinearGradient(x,yb+36*s,x,yb+50*s);
+      tutuG.addColorStop(0,uniformC);tutuG.addColorStop(1,lt(uniformC,20));
+      c.fillStyle=tutuG;
+      c.beginPath();
+      c.moveTo(x-14*s,yb+36*s);
+      c.quadraticCurveTo(x-26*s,yb+50*s,x-22*s,yb+52*s);
+      c.lineTo(x+22*s,yb+52*s);
+      c.quadraticCurveTo(x+26*s,yb+50*s,x+14*s,yb+36*s);
+      c.closePath();c.fill();
+      c.strokeStyle=dk(uniformC,35);c.lineWidth=1.5*s;c.stroke();
+      // Scalloped edge on tutu
+      c.fillStyle=lt(uniformC,15);
+      for(var sc=-3;sc<=3;sc++){
+        c.beginPath();c.arc(x+sc*6.5*s,yb+52*s,4*s,0,Math.PI);c.fill();
+      }
+      // Vest buttons (fewer, cuter)
+      c.fillStyle='rgba(255,255,255,0.5)';
+      for(var i=0;i<2;i++){c.beginPath();c.arc(x,yb+20*s+i*7*s,2*s,0,Math.PI*2);c.fill();}
+      // Small bow at neckline
+      c.fillStyle='#FF69B4';
+      c.beginPath();c.moveTo(x-1*s,yb+13*s);c.quadraticCurveTo(x-6*s,yb+9*s,x-7*s,yb+12*s);c.quadraticCurveTo(x-5*s,yb+15*s,x-1*s,yb+13*s);c.fill();
+      c.beginPath();c.moveTo(x+1*s,yb+13*s);c.quadraticCurveTo(x+6*s,yb+9*s,x+7*s,yb+12*s);c.quadraticCurveTo(x+5*s,yb+15*s,x+1*s,yb+13*s);c.fill();
+      clayCirc(c,x,yb+13*s,2*s,2*s,'#E8507A',1*s);
+    } else {
+      // Vest buttons
+      c.fillStyle='rgba(255,255,255,0.5)';
+      for(var i=0;i<3;i++){c.beginPath();c.arc(x,yb+20*s+i*8*s,2*s,0,Math.PI*2);c.fill();}
+    }
     // CC logo on vest
     c.fillStyle='rgba(255,215,0,0.8)';c.font=`bold ${8*s}px 'Fredoka One',Arial`;c.textAlign='center';
     c.fillText('CC',x,yb+16*s);
@@ -847,17 +874,22 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
   });
   // Eyebrows
   if(isYeti){
-    // Furry yeti brows
+    // Yeti brows
     c.save();
     [-1,1].forEach(side=>{
-      const bx=x+side*eyeSpread*s,by=ey-14*s;
-      c.fillStyle=dk(skinC,15);
-      c.beginPath();c.ellipse(bx,by,8*s,3.5*s,side*0.15,0,Math.PI*2);c.fill();
-      c.strokeStyle=dk(skinC,35);c.lineWidth=1*s;
-      // Fur strokes on brow
-      for(let i=-2;i<=2;i++){
-        c.beginPath();c.moveTo(bx+i*3*s,by+2*s);
-        c.lineTo(bx+i*3*s+side*2*s,by-2*s);c.stroke();
+      var bx=x+side*eyeSpread*s,by=ey-14*s;
+      if(isGirl){
+        // Girl yeti: thinner, arched furry brows
+        c.fillStyle=dk(skinC,15);
+        c.beginPath();c.ellipse(bx,by,6*s,2.5*s,side*0.2,0,Math.PI*2);c.fill();
+        c.strokeStyle=dk(skinC,35);c.lineWidth=0.8*s;
+        for(var i=-1;i<=1;i++){c.beginPath();c.moveTo(bx+i*3*s,by+1.5*s);c.lineTo(bx+i*3*s+side*1.5*s,by-1.5*s);c.stroke();}
+      } else {
+        // Boy yeti: thick bushy brows
+        c.fillStyle=dk(skinC,15);
+        c.beginPath();c.ellipse(bx,by,8*s,3.5*s,side*0.15,0,Math.PI*2);c.fill();
+        c.strokeStyle=dk(skinC,35);c.lineWidth=1*s;
+        for(var i=-2;i<=2;i++){c.beginPath();c.moveTo(bx+i*3*s,by+2*s);c.lineTo(bx+i*3*s+side*2*s,by-2*s);c.stroke();}
       }
     });
     c.restore();
