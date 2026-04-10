@@ -93,6 +93,148 @@ body{background:#87CEEB;font-family:'Nunito',sans-serif;overflow:hidden;width:10
 .badge-emoji{font-size:48px;display:block;animation:badgeSpin 0.6s ease;}
 @keyframes badgeSpin{0%{transform:rotate(-10deg) scale(0.5);}100%{transform:rotate(0deg) scale(1);}}
 .badge-title{font-family:'Fredoka One',cursive;font-size:18px;color:#8B4513;margin:4px 0 2px;}
+
+/* ============================================================
+   RESPONSIVE: Mobile (<600px) — compact everything
+   ============================================================ */
+@media(max-width:600px){
+  /* Title */
+  .title-logo{font-size:clamp(28px,9vw,48px);padding:0 10px;}
+  .title-subtitle{font-size:clamp(10px,3vw,16px);}
+  .title-trucks{gap:10px;margin:10px 0;}
+  .title-truck{font-size:clamp(28px,8vw,44px);}
+  .clay-btn{font-size:clamp(14px,4vw,20px);padding:10px 30px;}
+  .clay-btn-secondary{font-size:clamp(11px,3vw,15px);padding:8px 22px;}
+  .name-input{font-size:14px!important;width:clamp(140px,50vw,200px)!important;padding:8px 12px!important;}
+  /* Character screen */
+  .char-title{font-size:clamp(16px,5vw,28px);margin-bottom:4px;}
+  .char-panel{padding:8px;border-radius:14px;}
+  #charCanvas{width:140px!important;height:170px!important;}
+  .option-label{font-size:10px;width:40px;}
+  .swatch{width:22px;height:22px;}
+  .style-btn{font-size:8px;padding:3px 7px;}
+  .species-btn{font-size:10px;padding:5px 10px;}
+  /* Game HUD */
+  #hud{padding:4px 6px;}
+  .hud-panel{padding:3px 7px;border-radius:10px;}
+  .hud-score{font-size:clamp(11px,3vw,15px);}
+  .hud-btn{width:28px;height:28px;font-size:12px;border-radius:8px;}
+  .meter-bar{width:clamp(40px,14vw,60px);height:8px;}
+  .hud-meter{font-size:clamp(8px,2vw,10px);gap:3px;}
+  .hud-stars{font-size:clamp(10px,2.5vw,14px);}
+  /* Job bar */
+  #job-bar{gap:5px;right:5px;}
+  .job-btn{width:40px;height:40px;font-size:17px;border-width:2px;}
+  .job-btn .job-label{font-size:6px;}
+  /* D-pad */
+  #controls{bottom:10px;left:10px;width:85px;height:85px;}
+  .dpad{width:85px;height:85px;}
+  .dpad-btn{width:28px;height:28px;font-size:13px;}
+  /* Action */
+  #action-btn{bottom:10px;right:10px;width:50px;height:50px;font-size:9px;border-width:2px;}
+  /* Minimap */
+  #minimap{bottom:70px;left:6px;padding:2px;}
+  #minimapCanvas{width:55px;height:55px;}
+  /* Mission */
+  #task-popup{top:38px;padding:3px 10px;font-size:clamp(8px,2.5vw,11px);border-radius:14px;}
+  /* Notification */
+  #notification{font-size:clamp(12px,4vw,16px);padding:8px 16px;border-radius:14px;}
+  /* Badge popup */
+  #badge-popup{padding:14px 18px;min-width:180px;}
+  .badge-emoji{font-size:40px;}
+  .badge-title{font-size:15px;}
+  .badge-desc{font-size:10px;}
+  /* Tutorial */
+  .tutorial-box{padding:14px 20px;max-width:280px;}
+  .tutorial-icon{font-size:32px;margin-bottom:4px;}
+  .tutorial-text{font-size:13px;margin-bottom:8px;}
+}
+
+/* Very small phones (<380px) */
+@media(max-width:380px){
+  .title-logo{font-size:26px;}
+  #charCanvas{width:110px!important;height:140px!important;}
+  #job-bar{gap:4px;right:3px;}
+  .job-btn{width:34px;height:34px;font-size:14px;}
+  .job-btn .job-label{display:none;}
+  #controls{width:75px;height:75px;bottom:8px;left:6px;}
+  .dpad{width:75px;height:75px;}
+  .dpad-btn{width:24px;height:24px;font-size:11px;}
+  #action-btn{width:44px;height:44px;font-size:8px;}
+  #minimap{display:none;}
+}
+
+/* ============================================================
+   RESPONSIVE: Desktop (>900px) — expand and enhance
+   ============================================================ */
+@media(min-width:900px){
+  /* Title */
+  .title-logo{font-size:clamp(48px,6vw,80px);}
+  .title-subtitle{font-size:clamp(16px,2vw,26px);}
+  .title-trucks{gap:24px;margin:24px 0;}
+  .title-truck{font-size:clamp(48px,5vw,72px);}
+  .clay-btn{font-size:clamp(20px,2.5vw,30px);padding:16px 52px;}
+  .clay-btn-secondary{font-size:clamp(14px,1.8vw,22px);padding:12px 36px;}
+  .name-input{font-size:22px!important;width:260px!important;padding:12px 20px!important;}
+  /* Character screen */
+  .char-title{font-size:clamp(28px,3.5vw,48px);}
+  .char-panel{padding:16px;border-radius:24px;}
+  #charCanvas{width:220px!important;height:260px!important;}
+  .option-label{font-size:14px;width:60px;}
+  .swatch{width:32px;height:32px;}
+  .style-btn{font-size:12px;padding:5px 14px;}
+  .species-btn{font-size:14px;padding:10px 18px;}
+  /* Game HUD */
+  #hud{padding:8px 14px;}
+  .hud-panel{padding:6px 14px;border-radius:14px;border-width:3px;}
+  .hud-score{font-size:22px;}
+  .hud-btn{width:38px;height:38px;font-size:18px;}
+  .meter-bar{width:100px;height:14px;}
+  .hud-meter{font-size:14px;gap:6px;}
+  .hud-stars{font-size:20px;}
+  /* Job bar */
+  #job-bar{gap:12px;right:14px;}
+  .job-btn{width:64px;height:64px;font-size:28px;border-width:4px;}
+  .job-btn .job-label{font-size:9px;}
+  /* D-pad */
+  #controls{bottom:20px;left:20px;width:130px;height:130px;}
+  .dpad{width:130px;height:130px;}
+  .dpad-btn{width:40px;height:40px;font-size:20px;border-width:3px;}
+  /* Action */
+  #action-btn{bottom:20px;right:20px;width:76px;height:76px;font-size:14px;border-width:4px;}
+  /* Minimap */
+  #minimap{bottom:100px;left:14px;}
+  #minimapCanvas{width:90px;height:90px;}
+  /* Mission */
+  #task-popup{top:50px;padding:6px 22px;font-size:15px;}
+  /* Notification */
+  #notification{font-size:24px;padding:14px 32px;}
+  /* Badge */
+  #badge-popup{padding:24px 32px;min-width:260px;}
+  .badge-emoji{font-size:60px;}
+  .badge-title{font-size:22px;}
+  .badge-desc{font-size:14px;}
+  /* Tutorial */
+  .tutorial-box{padding:28px 36px;max-width:420px;}
+  .tutorial-icon{font-size:52px;}
+  .tutorial-text{font-size:20px;}
+}
+
+/* Large desktop (>1200px) */
+@media(min-width:1200px){
+  .title-logo{font-size:80px;}
+  .title-truck{font-size:72px;}
+  .clay-btn{font-size:28px;padding:18px 60px;}
+  #job-bar{gap:14px;right:20px;}
+  .job-btn{width:72px;height:72px;font-size:32px;}
+  .job-btn .job-label{font-size:10px;}
+  #controls{width:150px;height:150px;}
+  .dpad{width:150px;height:150px;}
+  .dpad-btn{width:46px;height:46px;font-size:22px;}
+  #action-btn{width:86px;height:86px;font-size:16px;}
+  .hud-score{font-size:26px;}
+  .meter-bar{width:120px;height:16px;}
+}
 .badge-desc{font-size:11px;color:#5C3D00;margin-bottom:8px;}
 .particle{position:absolute;pointer-events:none;z-index:500;font-size:20px;animation:particleFly 1s ease-out forwards;}
 @keyframes particleFly{0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1;}100%{transform:translate(var(--dx),var(--dy)) scale(0) rotate(var(--rot));opacity:0;}}
@@ -1576,7 +1718,7 @@ function drawTruck(c,x,y,type,frame,mv){
 // ======================================================
 let mmT=0;
 function drawMinimap(){
-  var mw=70,mh=70,sx=mw/WW,sy=mh/WH;
+  var mw=mmC.width,mh=mmC.height,sx=mw/WW,sy=mh/WH;
   mmx.fillStyle='#5CB85C';mmx.fillRect(0,0,mw,mh);
   mmx.fillStyle='#2980B9';W.water.forEach(w=>mmx.fillRect(w.x*sx,w.y*sy,w.w*sx,w.h*sy));
   mmx.fillStyle='#8B7355';W.roads.forEach(r=>mmx.fillRect(r.x*sx,r.y*sy,Math.max(r.w*sx,1.5),Math.max(r.h*sy,1.5)));
