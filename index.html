@@ -110,7 +110,7 @@ body{background:#87CEEB;font-family:'Nunito',sans-serif;overflow:hidden;width:10
 <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:720px;width:100%;padding:0 6px;">
 <!-- Preview -->
 <div class="char-panel" style="min-width:160px;display:flex;flex-direction:column;align-items:center;gap:8px;">
-<canvas id="charCanvas" width="140" height="170" style="border-radius:12px;"></canvas>
+<canvas id="charCanvas" width="200" height="240" style="border-radius:12px;width:200px;height:240px;"></canvas>
 <input class="name-input" id="playerNameInput" type="text" placeholder="Your Name!" maxlength="12">
 </div>
 <!-- Options -->
@@ -455,37 +455,185 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
   const yb=y+bob+mvB;
 
   if(isYeti){
-    // YETI BODY - rounder, fluffier
-    // Fur body
-    clayCirc(c,x,yb+28*s,24*s,28*s,skinC,2.5*s);
-    // Belly patch
-    c.save();c.globalAlpha=0.4;c.fillStyle='#fff';c.beginPath();c.ellipse(x,yb+30*s,14*s,18*s,0,0,Math.PI*2);c.fill();c.restore();
-    // Legs (stubby)
-    clayCirc(c,x-10*s,yb+54*s,8*s,10*s,skinC,2*s);
-    clayCirc(c,x+10*s,yb+54*s,8*s,10*s,skinC,2*s);
-    // Big feet
-    clayCirc(c,x-12*s,yb+62*s,10*s,5*s,dk(skinC,20),2*s);
-    clayCirc(c,x+12*s,yb+62*s,10*s,5*s,dk(skinC,20),2*s);
-    // Arms
-    const as=moving?Math.sin(frame*0.15)*4*s:0;
-    clayCirc(c,x-26*s,yb+28*s+as,8*s,14*s,skinC,2*s);
-    clayCirc(c,x+26*s,yb+28*s-as,8*s,14*s,skinC,2*s);
-    // Uniform vest
-    c.save();c.globalAlpha=0.7;
-    const ug=c.createLinearGradient(x-16*s,yb+14*s,x+16*s,yb+40*s);
-    ug.addColorStop(0,lt(uniformC,20));ug.addColorStop(1,uniformC);
-    c.fillStyle=ug;rr(c,x-16*s,yb+14*s,32*s,26*s,8*s);c.fill();
-    c.strokeStyle=dk(uniformC,40);c.lineWidth=1.5*s;c.stroke();c.restore();
-    // Head (big round)
-    clayCirc(c,x,yb-4*s,26*s,24*s,skinC,2.5*s);
-    // Fur tufts on head
-    c.fillStyle=skinC;
-    for(let i=-2;i<=2;i++){c.beginPath();c.ellipse(x+i*8*s,yb-26*s,5*s,8*s,i*0.15,0,Math.PI*2);c.fill();}
-    c.strokeStyle=dk(skinC,30);c.lineWidth=1.5*s;
-    for(let i=-2;i<=2;i++){c.beginPath();c.ellipse(x+i*8*s,yb-26*s,5*s,8*s,i*0.15,0,Math.PI*2);c.stroke();}
-    // Small horns
-    clayCirc(c,x-14*s,yb-22*s,4*s,7*s,'#E8DCC8',1.5*s);
-    clayCirc(c,x+14*s,yb-22*s,4*s,7*s,'#E8DCC8',1.5*s);
+    // === DETAILED YETI CHARACTER ===
+    const furDk=dk(skinC,25),furLt=lt(skinC,35),furMd=skinC;
+    // Helper: draw fur edge tufts along a curve
+    function furEdge(cx,cy,rx,ry,count,len,spread){
+      c.save();c.strokeStyle=furDk;c.lineWidth=1.2*s;c.lineCap='round';
+      for(let i=0;i<count;i++){
+        const a=(i/count)*Math.PI*2+Math.sin(frame*0.02+i)*0.1;
+        const bx=cx+Math.cos(a)*rx*s,by=cy+Math.sin(a)*ry*s;
+        const ex=bx+Math.cos(a+spread)*len*s,ey2=by+Math.sin(a+spread)*len*s;
+        c.beginPath();c.moveTo(bx,by);c.quadraticCurveTo(bx+Math.cos(a)*len*0.3*s,by+Math.sin(a)*len*0.3*s,ex,ey2);c.stroke();
+      }
+      c.restore();
+    }
+    // Helper: fill with fur texture strokes
+    function furFill(cx,cy,rx,ry,baseC,count){
+      c.save();
+      for(let i=0;i<count;i++){
+        const a=Math.random()*Math.PI*2;
+        const d=Math.random()*0.85;
+        const fx=cx+Math.cos(a)*rx*d*s,fy=cy+Math.sin(a)*ry*d*s;
+        const len=(3+Math.random()*5)*s;
+        const fa=a+Math.PI*0.5+(Math.random()-0.5)*0.8;
+        c.strokeStyle=Math.random()>0.5?lt(baseC,15+Math.random()*25):dk(baseC,10+Math.random()*15);
+        c.lineWidth=(0.8+Math.random()*0.8)*s;c.lineCap='round';
+        c.beginPath();c.moveTo(fx,fy);c.lineTo(fx+Math.cos(fa)*len,fy+Math.sin(fa)*len);c.stroke();
+      }
+      c.restore();
+    }
+
+    // -- BODY (pear-shaped) --
+    // Body base shape
+    c.save();
+    const bodyGrad=c.createRadialGradient(x-6*s,yb+18*s,4*s,x,yb+30*s,32*s);
+    bodyGrad.addColorStop(0,furLt);bodyGrad.addColorStop(0.5,furMd);bodyGrad.addColorStop(1,furDk);
+    c.fillStyle=bodyGrad;
+    c.beginPath();
+    c.moveTo(x-20*s,yb+10*s);
+    c.bezierCurveTo(x-28*s,yb+20*s,x-28*s,yb+48*s,x-16*s,yb+56*s);
+    c.quadraticCurveTo(x,yb+62*s,x+16*s,yb+56*s);
+    c.bezierCurveTo(x+28*s,yb+48*s,x+28*s,yb+20*s,x+20*s,yb+10*s);
+    c.quadraticCurveTo(x,yb+4*s,x-20*s,yb+10*s);
+    c.fill();
+    c.strokeStyle=furDk;c.lineWidth=2*s;c.stroke();
+    c.restore();
+    // Body fur texture
+    furFill(x,yb+30*s,24,26,skinC,40);
+    // Belly patch (lighter oval with soft edge)
+    c.save();
+    const bellyG=c.createRadialGradient(x,yb+28*s,2*s,x,yb+30*s,16*s);
+    bellyG.addColorStop(0,'rgba(255,255,255,0.55)');bellyG.addColorStop(0.7,'rgba(255,255,255,0.3)');bellyG.addColorStop(1,'rgba(255,255,255,0)');
+    c.fillStyle=bellyG;c.beginPath();c.ellipse(x,yb+30*s,14*s,18*s,0,0,Math.PI*2);c.fill();
+    c.restore();
+    // Body fur edge tufts
+    furEdge(x,yb+30*s,26,28,20,6,0.3);
+
+    // -- LEGS (chunky, rounded) --
+    [-1,1].forEach(side=>{
+      const lx=x+side*11*s,ly=yb+52*s;
+      const legG=c.createRadialGradient(lx-2*side*s,ly-4*s,2*s,lx,ly,12*s);
+      legG.addColorStop(0,furLt);legG.addColorStop(1,furDk);
+      c.fillStyle=legG;c.beginPath();c.ellipse(lx,ly,9*s,12*s,side*0.1,0,Math.PI*2);c.fill();
+      c.strokeStyle=furDk;c.lineWidth=1.5*s;c.stroke();
+      furFill(lx,ly,8,10,skinC,12);
+      // Big feet with toes
+      const fG=c.createRadialGradient(lx+side*2*s,yb+62*s,1*s,lx+side*2*s,yb+63*s,10*s);
+      fG.addColorStop(0,lt(skinC,15));fG.addColorStop(1,dk(skinC,25));
+      c.fillStyle=fG;c.beginPath();c.ellipse(lx+side*2*s,yb+63*s,11*s,5*s,side*0.15,0,Math.PI*2);c.fill();
+      c.strokeStyle=dk(skinC,40);c.lineWidth=1.5*s;c.stroke();
+      // Toe bumps
+      for(let t=0;t<3;t++){
+        c.fillStyle=dk(skinC,15);c.beginPath();
+        c.arc(lx+side*(2+t*3-3)*s,yb+60*s,2.5*s,0,Math.PI*2);c.fill();
+      }
+    });
+
+    // -- ARMS (thick, furry) --
+    const armSw=moving?Math.sin(frame*0.15)*5*s:0;
+    [-1,1].forEach((side,idx)=>{
+      const ax=x+side*27*s,ay=yb+24*s+(idx===0?armSw:-armSw);
+      const armG=c.createRadialGradient(ax-side*2*s,ay-4*s,2*s,ax,ay,14*s);
+      armG.addColorStop(0,furLt);armG.addColorStop(1,furDk);
+      c.fillStyle=armG;c.beginPath();c.ellipse(ax,ay,9*s,16*s,side*0.2,0,Math.PI*2);c.fill();
+      c.strokeStyle=furDk;c.lineWidth=1.5*s;c.stroke();
+      furFill(ax,ay,8,14,skinC,15);
+      // Paw/hand
+      c.fillStyle=dk(skinC,15);c.beginPath();c.ellipse(ax+side*2*s,ay+14*s,7*s,5*s,side*0.3,0,Math.PI*2);c.fill();
+      c.strokeStyle=dk(skinC,35);c.lineWidth=1*s;c.stroke();
+      // Claws (tiny, cute)
+      for(let cl=0;cl<3;cl++){
+        c.strokeStyle=dk(skinC,50);c.lineWidth=1*s;c.beginPath();
+        c.moveTo(ax+side*(cl*3-2)*s,ay+18*s);
+        c.lineTo(ax+side*(cl*3-1)*s,ay+20*s);c.stroke();
+      }
+    });
+
+    // -- VEST/UNIFORM --
+    c.save();c.globalAlpha=0.75;
+    const ug=c.createLinearGradient(x-18*s,yb+12*s,x+18*s,yb+42*s);
+    ug.addColorStop(0,lt(uniformC,25));ug.addColorStop(0.5,uniformC);ug.addColorStop(1,dk(uniformC,20));
+    c.fillStyle=ug;
+    c.beginPath();c.moveTo(x-16*s,yb+12*s);
+    c.bezierCurveTo(x-20*s,yb+20*s,x-20*s,yb+38*s,x-12*s,yb+42*s);
+    c.quadraticCurveTo(x,yb+45*s,x+12*s,yb+42*s);
+    c.bezierCurveTo(x+20*s,yb+38*s,x+20*s,yb+20*s,x+16*s,yb+12*s);
+    c.quadraticCurveTo(x,yb+8*s,x-16*s,yb+12*s);
+    c.fill();
+    c.strokeStyle=dk(uniformC,45);c.lineWidth=2*s;c.stroke();
+    // Vest buttons
+    c.fillStyle='rgba(255,255,255,0.5)';
+    for(let i=0;i<3;i++){c.beginPath();c.arc(x,yb+20*s+i*8*s,2*s,0,Math.PI*2);c.fill();}
+    // CC logo on vest
+    c.fillStyle='rgba(255,215,0,0.8)';c.font=`bold ${8*s}px 'Fredoka One',Arial`;c.textAlign='center';
+    c.fillText('CC',x,yb+16*s);
+    c.restore();
+
+    // -- HEAD (large, expressive) --
+    c.save();
+    const headG=c.createRadialGradient(x-5*s,yb-12*s,5*s,x,yb-4*s,28*s);
+    headG.addColorStop(0,furLt);headG.addColorStop(0.5,furMd);headG.addColorStop(1,furDk);
+    c.fillStyle=headG;
+    c.beginPath();c.ellipse(x,yb-4*s,26*s,25*s,0,0,Math.PI*2);c.fill();
+    c.strokeStyle=furDk;c.lineWidth=2*s;c.stroke();
+    c.restore();
+    // Head fur texture
+    furFill(x,yb-4*s,24,23,skinC,35);
+    // Head fur edge tufts
+    furEdge(x,yb-4*s,25,24,16,5,0.2);
+    // Head highlight (rim light)
+    c.save();c.globalAlpha=0.18;c.strokeStyle='#fff';c.lineWidth=2.5*s;
+    c.beginPath();c.arc(x,yb-4*s,23*s,-Math.PI*0.85,-Math.PI*0.15);c.stroke();c.restore();
+
+    // -- EARS (round, fuzzy) --
+    [-1,1].forEach(side=>{
+      const earX=x+side*22*s,earY=yb-18*s;
+      // Outer ear
+      clayCirc(c,earX,earY,8*s,9*s,skinC,2*s);
+      furFill(earX,earY,6,7,skinC,8);
+      // Inner ear
+      c.save();
+      const earIG=c.createRadialGradient(earX,earY,1*s,earX,earY,5*s);
+      earIG.addColorStop(0,'rgba(255,180,200,0.6)');earIG.addColorStop(1,'rgba(255,180,200,0)');
+      c.fillStyle=earIG;c.beginPath();c.ellipse(earX,earY,5*s,6*s,0,0,Math.PI*2);c.fill();c.restore();
+    });
+
+    // -- HORNS (pearly, curved) --
+    [-1,1].forEach(side=>{
+      const hx=x+side*15*s,hy=yb-26*s;
+      c.save();
+      const hornG=c.createLinearGradient(hx,hy+8*s,hx,hy-8*s);
+      hornG.addColorStop(0,'#D4C8A0');hornG.addColorStop(0.3,'#F5ECD7');hornG.addColorStop(0.7,'#EDE2C8');hornG.addColorStop(1,'#C8B888');
+      c.fillStyle=hornG;
+      c.beginPath();
+      c.moveTo(hx-3*s,hy+6*s);
+      c.quadraticCurveTo(hx-side*2*s,hy-4*s,hx+side*1*s,hy-10*s);
+      c.quadraticCurveTo(hx+side*3*s,hy-4*s,hx+3*s,hy+6*s);
+      c.closePath();c.fill();
+      c.strokeStyle='#B8A878';c.lineWidth=1.2*s;c.stroke();
+      // Horn rings
+      c.strokeStyle='rgba(0,0,0,0.1)';c.lineWidth=0.8*s;
+      for(let r=0;r<3;r++){
+        const ry=hy+4*s-r*4*s,rw=(3-r*0.5)*s;
+        c.beginPath();c.moveTo(hx-rw,ry);c.quadraticCurveTo(hx,ry-1*s,hx+rw,ry);c.stroke();
+      }
+      c.restore();
+    });
+
+    // -- FUR TUFT on top of head (fluffy crown) --
+    c.save();
+    const tuftC=lt(skinC,15);
+    for(let i=-3;i<=3;i++){
+      const tx=x+i*6*s,ty=yb-27*s;
+      const tlen=(8+Math.abs(i===0?4:2-Math.abs(i))*2)*s;
+      const tangle=-Math.PI/2+i*0.12+Math.sin(frame*0.03+i)*0.08;
+      c.strokeStyle=i%2===0?tuftC:furMd;c.lineWidth=(2+Math.random())*s;c.lineCap='round';
+      c.beginPath();c.moveTo(tx,ty);
+      c.quadraticCurveTo(tx+Math.cos(tangle)*tlen*0.6,ty+Math.sin(tangle)*tlen*0.6,
+        tx+Math.cos(tangle)*tlen,ty+Math.sin(tangle)*tlen);c.stroke();
+    }
+    c.restore();
   } else {
     // HUMAN - same as before
     clayRect(c,x-18*s,yb+18*s,36*s,32*s,10*s,uniformC,2.5*s);
@@ -550,47 +698,140 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
   c.strokeStyle=dk(hairC,40);c.lineWidth=1.5*s;c.stroke();
   c.restore();
 
-  // Eyes (works for both)
+  // Eyes
   const ey=isYeti?yb-4*s:yb;
-  const eyeSpread=isYeti?10:8;
-  const eyeSize=isYeti?8:7;
+  const eyeSpread=isYeti?11:8;
+  const eyeW=isYeti?9:7;
+  const eyeH=isYeti?11:8;
   c.save();
   [-1,1].forEach(side=>{
     const ex=x+side*eyeSpread*s;
-    c.fillStyle='#fff';c.beginPath();c.ellipse(ex,ey-3*s,eyeSize*s,(eyeSize+1)*s,0,0,Math.PI*2);c.fill();
-    c.strokeStyle='rgba(0,0,0,0.15)';c.lineWidth=1*s;c.stroke();
-    const ig=c.createRadialGradient(ex,ey-2*s,1,ex,ey-2*s,5*s);ig.addColorStop(0,lt(eyeC,40));ig.addColorStop(0.7,eyeC);ig.addColorStop(1,dk(eyeC,30));
-    c.fillStyle=ig;c.beginPath();c.arc(ex,ey-2*s,(isYeti?5:4.5)*s,0,Math.PI*2);c.fill();
-    c.fillStyle='#000';c.beginPath();c.arc(ex-side*s,ey-2*s,(isYeti?3:2.5)*s,0,Math.PI*2);c.fill();
-    c.fillStyle='white';c.beginPath();c.arc(ex-side*2*s,ey-4*s,2*s,0,Math.PI*2);c.fill();
-    c.beginPath();c.arc(ex+side*s,ey-1*s,1*s,0,Math.PI*2);c.fill();
+    if(isYeti){
+      // Big cartoon yeti eyes with lids
+      // Eye socket shadow
+      c.save();c.globalAlpha=0.1;c.fillStyle='#000';
+      c.beginPath();c.ellipse(ex,ey-2*s,(eyeW+2)*s,(eyeH+2)*s,0,0,Math.PI*2);c.fill();c.restore();
+      // White with gradient
+      const ewG=c.createRadialGradient(ex-side*2*s,ey-5*s,2*s,ex,ey-2*s,eyeH*s);
+      ewG.addColorStop(0,'#FFFFFF');ewG.addColorStop(0.8,'#F0F0F5');ewG.addColorStop(1,'#E0E0EA');
+      c.fillStyle=ewG;c.beginPath();c.ellipse(ex,ey-2*s,eyeW*s,eyeH*s,0,0,Math.PI*2);c.fill();
+      c.strokeStyle='rgba(60,40,80,0.3)';c.lineWidth=1.5*s;c.stroke();
+      // Iris (large)
+      const irisR=6*s;
+      const iG=c.createRadialGradient(ex-side*s,ey-3*s,1*s,ex,ey-2*s,irisR);
+      iG.addColorStop(0,lt(eyeC,50));iG.addColorStop(0.4,eyeC);iG.addColorStop(0.8,dk(eyeC,25));iG.addColorStop(1,dk(eyeC,45));
+      c.fillStyle=iG;c.beginPath();c.arc(ex,ey-1*s,irisR,0,Math.PI*2);c.fill();
+      // Iris detail ring
+      c.strokeStyle=dk(eyeC,30);c.lineWidth=0.5*s;c.stroke();
+      // Pupil (large, round)
+      c.fillStyle='#0A0015';c.beginPath();c.arc(ex-side*0.5*s,ey-1*s,3.5*s,0,Math.PI*2);c.fill();
+      // Main highlight (big)
+      c.fillStyle='rgba(255,255,255,0.9)';c.beginPath();c.ellipse(ex-side*3*s,ey-5*s,3*s,2.5*s,-0.2,0,Math.PI*2);c.fill();
+      // Secondary highlight
+      c.fillStyle='rgba(255,255,255,0.6)';c.beginPath();c.arc(ex+side*2*s,ey+1*s,1.5*s,0,Math.PI*2);c.fill();
+      // Upper eyelid
+      c.save();c.fillStyle=skinC;
+      c.beginPath();c.ellipse(ex,ey-2*s,eyeW*s,eyeH*s,0,Math.PI,Math.PI*2);
+      c.lineTo(ex+eyeW*s,ey-2*s);
+      c.quadraticCurveTo(ex,ey-(eyeH-3)*s,ex-eyeW*s,ey-2*s);
+      c.fill();c.restore();
+      // Eyelashes for girl yetis
+      if(isGirl){
+        c.strokeStyle=dk(skinC,40);c.lineWidth=1.5*s;c.lineCap='round';
+        for(let l=0;l<3;l++){
+          const la=-Math.PI*0.3+l*0.2+side*0.1;
+          c.beginPath();c.moveTo(ex+side*(eyeW-1)*s*Math.cos(la+0.3),ey-2*s-eyeH*s*0.6);
+          c.lineTo(ex+side*(eyeW+3)*s*Math.cos(la),ey-2*s-eyeH*s*0.8-l*s);c.stroke();
+        }
+      }
+    } else {
+      // Human eyes (same as before but slightly improved)
+      c.fillStyle='#fff';c.beginPath();c.ellipse(ex,ey-3*s,eyeW*s,eyeH*s,0,0,Math.PI*2);c.fill();
+      c.strokeStyle='rgba(0,0,0,0.15)';c.lineWidth=1*s;c.stroke();
+      const ig=c.createRadialGradient(ex,ey-2*s,1,ex,ey-2*s,5*s);ig.addColorStop(0,lt(eyeC,40));ig.addColorStop(0.7,eyeC);ig.addColorStop(1,dk(eyeC,30));
+      c.fillStyle=ig;c.beginPath();c.arc(ex,ey-2*s,4.5*s,0,Math.PI*2);c.fill();
+      c.fillStyle='#000';c.beginPath();c.arc(ex-side*s,ey-2*s,2.5*s,0,Math.PI*2);c.fill();
+      c.fillStyle='white';c.beginPath();c.arc(ex-side*2*s,ey-4*s,2*s,0,Math.PI*2);c.fill();
+      c.beginPath();c.arc(ex+side*s,ey-1*s,1*s,0,Math.PI*2);c.fill();
+    }
   });
   // Eyebrows
-  c.strokeStyle=dk(hairC,20);c.lineWidth=2.5*s;c.lineCap='round';
-  c.beginPath();c.moveTo(x-14*s,ey-12*s);c.quadraticCurveTo(x-8*s,ey-14*s,x-3*s,ey-11*s);c.stroke();
-  c.beginPath();c.moveTo(x+3*s,ey-11*s);c.quadraticCurveTo(x+8*s,ey-14*s,x+14*s,ey-12*s);c.stroke();
+  if(isYeti){
+    // Furry yeti brows
+    c.save();
+    [-1,1].forEach(side=>{
+      const bx=x+side*eyeSpread*s,by=ey-14*s;
+      c.fillStyle=dk(skinC,15);
+      c.beginPath();c.ellipse(bx,by,8*s,3.5*s,side*0.15,0,Math.PI*2);c.fill();
+      c.strokeStyle=dk(skinC,35);c.lineWidth=1*s;
+      // Fur strokes on brow
+      for(let i=-2;i<=2;i++){
+        c.beginPath();c.moveTo(bx+i*3*s,by+2*s);
+        c.lineTo(bx+i*3*s+side*2*s,by-2*s);c.stroke();
+      }
+    });
+    c.restore();
+  } else {
+    c.strokeStyle=dk(hairC,20);c.lineWidth=2.5*s;c.lineCap='round';
+    c.beginPath();c.moveTo(x-14*s,ey-12*s);c.quadraticCurveTo(x-8*s,ey-14*s,x-3*s,ey-11*s);c.stroke();
+    c.beginPath();c.moveTo(x+3*s,ey-11*s);c.quadraticCurveTo(x+8*s,ey-14*s,x+14*s,ey-12*s);c.stroke();
+  }
   c.restore();
 
   // Nose
-  c.save();c.strokeStyle=dk(skinC,40);c.lineWidth=1.5*s;c.lineCap='round';
+  c.save();
   if(isYeti){
-    // Round yeti nose
-    c.fillStyle=dk(skinC,30);c.beginPath();c.ellipse(x,ey+5*s,4*s,3*s,0,0,Math.PI*2);c.fill();c.stroke();
+    // Yeti nose - round, bulbous, cute like a cartoon animal
+    const noseG=c.createRadialGradient(x-1*s,ey+3*s,1*s,x,ey+5*s,6*s);
+    noseG.addColorStop(0,'#4A3A5A');noseG.addColorStop(0.5,'#3A2A4A');noseG.addColorStop(1,'#2A1A3A');
+    c.fillStyle=noseG;
+    c.beginPath();c.ellipse(x,ey+5*s,5.5*s,4*s,0,0,Math.PI*2);c.fill();
+    c.strokeStyle='#1A0A2A';c.lineWidth=1.2*s;c.stroke();
+    // Nose highlight
+    c.fillStyle='rgba(255,255,255,0.35)';c.beginPath();c.ellipse(x-1.5*s,ey+3.5*s,2*s,1.5*s,0,0,Math.PI*2);c.fill();
+    // Nostrils
+    c.fillStyle='#1A0A2A';
+    c.beginPath();c.ellipse(x-2*s,ey+6*s,1.2*s,0.8*s,0,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(x+2*s,ey+6*s,1.2*s,0.8*s,0,0,Math.PI*2);c.fill();
   } else {
+    c.strokeStyle=dk(skinC,40);c.lineWidth=1.5*s;c.lineCap='round';
     c.beginPath();c.moveTo(x-1*s,ey+2*s);c.quadraticCurveTo(x-4*s,ey+7*s,x,ey+8*s);c.quadraticCurveTo(x+4*s,ey+7*s,x+1*s,ey+2*s);c.stroke();
   }
   c.restore();
 
   // Mouth
-  c.save();c.strokeStyle=isYeti?'#C0392B':'#C0392B';c.lineWidth=2.5*s;c.lineCap='round';
-  c.beginPath();c.arc(x,ey+(isYeti?9:8)*s,(isYeti?10:8)*s,0.15,Math.PI-0.15);c.stroke();
-  if(isYeti){// Tiny fangs
-    c.fillStyle='#fff';
-    c.beginPath();c.moveTo(x-6*s,ey+10*s);c.lineTo(x-4*s,ey+14*s);c.lineTo(x-2*s,ey+10*s);c.fill();
-    c.beginPath();c.moveTo(x+2*s,ey+10*s);c.lineTo(x+4*s,ey+14*s);c.lineTo(x+6*s,ey+10*s);c.fill();
+  c.save();
+  if(isYeti){
+    // Wide happy yeti mouth
+    c.fillStyle='#8B2252';
+    c.beginPath();
+    c.moveTo(x-11*s,ey+10*s);
+    c.quadraticCurveTo(x,ey+22*s,x+11*s,ey+10*s);
+    c.quadraticCurveTo(x,ey+14*s,x-11*s,ey+10*s);
+    c.fill();
+    c.strokeStyle='#5A1030';c.lineWidth=1.5*s;c.stroke();
+    // Tongue
+    c.fillStyle='#E87A9F';
+    c.beginPath();c.ellipse(x+2*s,ey+16*s,4*s,3*s,0.1,0,Math.PI*2);c.fill();
+    c.strokeStyle='#C86080';c.lineWidth=0.8*s;c.stroke();
+    // Cute fangs (rounded, not sharp)
+    c.fillStyle='#FFFFF0';c.strokeStyle='rgba(0,0,0,0.15)';c.lineWidth=0.8*s;
+    // Left fang
+    c.beginPath();c.moveTo(x-7*s,ey+10*s);c.quadraticCurveTo(x-6*s,ey+15*s,x-4*s,ey+11*s);c.fill();c.stroke();
+    // Right fang
+    c.beginPath();c.moveTo(x+4*s,ey+11*s);c.quadraticCurveTo(x+6*s,ey+15*s,x+7*s,ey+10*s);c.fill();c.stroke();
+  } else {
+    c.strokeStyle='#C0392B';c.lineWidth=2.5*s;c.lineCap='round';
+    c.beginPath();c.arc(x,ey+8*s,8*s,0.15,Math.PI-0.15);c.stroke();
   }
-  // Cheeks
-  [-16,16].forEach(ox=>{const cg=c.createRadialGradient(x+ox*s,ey+5*s,0,x+ox*s,ey+5*s,6*s);cg.addColorStop(0,'rgba(255,130,130,0.4)');cg.addColorStop(1,'rgba(255,130,130,0)');c.fillStyle=cg;c.beginPath();c.ellipse(x+ox*s,ey+5*s,6*s,4*s,0,0,Math.PI*2);c.fill();});
+  // Cheeks (both species - yeti gets bigger, more colorful cheeks)
+  const cheekR=isYeti?8:6,cheekAlpha=isYeti?0.5:0.4;
+  [-1,1].forEach(side=>{
+    const cx2=x+side*(isYeti?18:16)*s,cy2=ey+(isYeti?7:5)*s;
+    const cg=c.createRadialGradient(cx2,cy2,0,cx2,cy2,cheekR*s);
+    cg.addColorStop(0,`rgba(255,130,150,${cheekAlpha})`);cg.addColorStop(1,'rgba(255,130,150,0)');
+    c.fillStyle=cg;c.beginPath();c.ellipse(cx2,cy2,cheekR*s,(cheekR-2)*s,0,0,Math.PI*2);c.fill();
+  });
   c.restore();
 
   // Freckles
@@ -625,8 +866,37 @@ function drawCharacter(c,x,y,s,opts,frame,moving){
     c.restore();
   }
 
-  // Hat (uniform colored)
-  if(!isYeti){
+  // Hat / Headwear
+  if(isYeti){
+    // Yeti gets a cute beanie
+    const bY=headY-28*s;
+    // Beanie body
+    const bG=c.createLinearGradient(x,bY+10*s,x,bY-8*s);
+    bG.addColorStop(0,dk(uniformC,10));bG.addColorStop(0.5,uniformC);bG.addColorStop(1,lt(uniformC,20));
+    c.fillStyle=bG;
+    c.beginPath();
+    c.moveTo(x-20*s,bY+10*s);
+    c.quadraticCurveTo(x-22*s,bY,x-18*s,bY-4*s);
+    c.quadraticCurveTo(x,bY-14*s,x+18*s,bY-4*s);
+    c.quadraticCurveTo(x+22*s,bY,x+20*s,bY+10*s);
+    c.fill();
+    c.strokeStyle=dk(uniformC,40);c.lineWidth=2*s;c.stroke();
+    // Beanie ribbing
+    c.strokeStyle=dk(uniformC,20);c.lineWidth=1*s;
+    for(let i=0;i<4;i++){
+      const ry=bY+8*s-i*3*s;
+      c.beginPath();c.moveTo(x-19*s,ry);c.quadraticCurveTo(x,ry-1*s,x+19*s,ry);c.stroke();
+    }
+    // Pom-pom
+    clayCirc(c,x,bY-12*s,6*s,6*s,lt(uniformC,30),1.5*s);
+    // Fur strokes on pom
+    c.strokeStyle=uniformC;c.lineWidth=1*s;c.lineCap='round';
+    for(let i=0;i<6;i++){const a=i*Math.PI/3;c.beginPath();c.moveTo(x+Math.cos(a)*2*s,bY-12*s+Math.sin(a)*2*s);c.lineTo(x+Math.cos(a)*6*s,bY-12*s+Math.sin(a)*6*s);c.stroke();}
+    // CC logo
+    c.fillStyle='#FFD700';c.font=`bold ${9*s}px 'Fredoka One',Arial`;c.textAlign='center';
+    c.fillText('CC',x,bY+4*s);
+  } else {
+    // Human hard hat
     clayRect(c,x-21*s,headY-33*s,42*s,14*s,5*s,uniformC,2*s);
     clayRect(c,x-15*s,headY-42*s,30*s,13*s,5*s,uniformC,2*s);
     c.fillStyle='#FFD700';c.font=`bold ${11*s}px 'Fredoka One',Arial`;c.textAlign='center';
@@ -641,8 +911,8 @@ function charOpts(){
 }
 
 function drawCharPreview(){
-  chx.clearRect(0,0,140,170);
-  drawCharacter(chx,70,65,1,charOpts(),Date.now()/100,false);
+  chx.clearRect(0,0,200,240);
+  drawCharacter(chx,100,95,1.3,charOpts(),Date.now()/100,false);
   requestAnimationFrame(drawCharPreview);
 }
 
@@ -744,36 +1014,124 @@ function drawYeti(c,y,cx,cy,ft){
 
 function drawMiniYeti(c,x,y,s,color,ft,phase){
   const bob=Math.sin(ft*0.004+phase)*2;
+  const furDk=dk(color,25),furLt=lt(color,30);
+  const yy=y+bob;
+
   // Shadow
-  c.save();c.globalAlpha=0.15;c.fillStyle='#000';c.beginPath();c.ellipse(x,y+30*s,12*s,4*s,0,0,Math.PI*2);c.fill();c.restore();
-  // Body
-  clayCirc(c,x,y+10*s+bob,14*s,18*s,color,2*s);
+  c.save();c.globalAlpha=0.15;c.fillStyle='#000';c.beginPath();c.ellipse(x,y+30*s,13*s,4*s,0,0,Math.PI*2);c.fill();c.restore();
+
+  // Body (pear shape)
+  c.save();
+  const bG=c.createRadialGradient(x-3*s,yy+2*s,3*s,x,yy+10*s,20*s);
+  bG.addColorStop(0,furLt);bG.addColorStop(0.6,color);bG.addColorStop(1,furDk);
+  c.fillStyle=bG;
+  c.beginPath();
+  c.moveTo(x-10*s,yy-2*s);
+  c.bezierCurveTo(x-16*s,yy+5*s,x-16*s,yy+24*s,x-8*s,yy+28*s);
+  c.quadraticCurveTo(x,yy+31*s,x+8*s,yy+28*s);
+  c.bezierCurveTo(x+16*s,yy+24*s,x+16*s,yy+5*s,x+10*s,yy-2*s);
+  c.quadraticCurveTo(x,yy-6*s,x-10*s,yy-2*s);
+  c.fill();c.strokeStyle=furDk;c.lineWidth=1.5*s;c.stroke();c.restore();
+
   // Belly
-  c.save();c.globalAlpha=0.35;c.fillStyle='#fff';c.beginPath();c.ellipse(x,y+12*s+bob,8*s,11*s,0,0,Math.PI*2);c.fill();c.restore();
-  // Head
-  clayCirc(c,x,y-12*s+bob,14*s,13*s,color,2*s);
-  // Eyes
-  c.fillStyle='#fff';c.beginPath();c.ellipse(x-5*s,y-14*s+bob,4*s,5*s,0,0,Math.PI*2);c.fill();
-  c.beginPath();c.ellipse(x+5*s,y-14*s+bob,4*s,5*s,0,0,Math.PI*2);c.fill();
-  c.fillStyle='#333';c.beginPath();c.arc(x-5*s,y-13*s+bob,2.5*s,0,Math.PI*2);c.fill();
-  c.beginPath();c.arc(x+5*s,y-13*s+bob,2.5*s,0,Math.PI*2);c.fill();
-  c.fillStyle='#fff';c.beginPath();c.arc(x-4*s,y-14.5*s+bob,1*s,0,Math.PI*2);c.fill();
-  c.beginPath();c.arc(x+4*s,y-14.5*s+bob,1*s,0,Math.PI*2);c.fill();
-  // Nose
-  c.fillStyle=dk(color,30);c.beginPath();c.ellipse(x,y-9*s+bob,3*s,2*s,0,0,Math.PI*2);c.fill();
-  // Smile
-  c.strokeStyle='#C0392B';c.lineWidth=1.5*s;c.lineCap='round';
-  c.beginPath();c.arc(x,y-6*s+bob,5*s,0.2,Math.PI-0.2);c.stroke();
-  // Tiny horns
-  c.fillStyle='#E8DCC8';
-  c.beginPath();c.ellipse(x-8*s,y-22*s+bob,2*s,4*s,0,0,Math.PI*2);c.fill();
-  c.beginPath();c.ellipse(x+8*s,y-22*s+bob,2*s,4*s,0,0,Math.PI*2);c.fill();
-  // Arms (stubby)
-  clayCirc(c,x-15*s,y+8*s+bob,5*s,8*s,color,1.5*s);
-  clayCirc(c,x+15*s,y+8*s+bob,5*s,8*s,color,1.5*s);
+  c.save();const beG=c.createRadialGradient(x,yy+10*s,1*s,x,yy+12*s,10*s);
+  beG.addColorStop(0,'rgba(255,255,255,0.5)');beG.addColorStop(1,'rgba(255,255,255,0)');
+  c.fillStyle=beG;c.beginPath();c.ellipse(x,yy+12*s,8*s,10*s,0,0,Math.PI*2);c.fill();c.restore();
+
+  // Fur strokes on body
+  c.save();c.strokeStyle=furDk;c.lineWidth=0.8*s;c.lineCap='round';
+  for(let i=0;i<12;i++){const a=Math.random()*Math.PI*2,d=Math.random()*12*s;const fx=x+Math.cos(a)*d*0.8,fy=yy+10*s+Math.sin(a)*d;
+    c.beginPath();c.moveTo(fx,fy);c.lineTo(fx+Math.cos(a+1.5)*3*s,fy+Math.sin(a+1.5)*3*s);c.stroke();}
+  c.restore();
+
+  // Arms
+  [-1,1].forEach(side=>{
+    const ax=x+side*14*s,ay=yy+8*s;
+    const aG=c.createRadialGradient(ax,ay-2*s,1*s,ax,ay,8*s);
+    aG.addColorStop(0,furLt);aG.addColorStop(1,furDk);
+    c.fillStyle=aG;c.beginPath();c.ellipse(ax,ay,5*s,9*s,side*0.2,0,Math.PI*2);c.fill();
+    c.strokeStyle=furDk;c.lineWidth=1*s;c.stroke();
+    // Paw
+    c.fillStyle=dk(color,15);c.beginPath();c.ellipse(ax+side*s,ay+8*s,4*s,3*s,0,0,Math.PI*2);c.fill();
+  });
+
   // Feet
-  clayCirc(c,x-6*s,y+28*s,6*s,4*s,dk(color,15),1.5*s);
-  clayCirc(c,x+6*s,y+28*s,6*s,4*s,dk(color,15),1.5*s);
+  [-1,1].forEach(side=>{
+    c.fillStyle=dk(color,20);c.beginPath();c.ellipse(x+side*6*s,y+29*s,7*s,3.5*s,side*0.1,0,Math.PI*2);c.fill();
+    c.strokeStyle=dk(color,40);c.lineWidth=1*s;c.stroke();
+  });
+
+  // Head
+  c.save();
+  const hG=c.createRadialGradient(x-3*s,yy-16*s,3*s,x,yy-12*s,16*s);
+  hG.addColorStop(0,furLt);hG.addColorStop(0.5,color);hG.addColorStop(1,furDk);
+  c.fillStyle=hG;c.beginPath();c.ellipse(x,yy-12*s,14*s,13*s,0,0,Math.PI*2);c.fill();
+  c.strokeStyle=furDk;c.lineWidth=1.5*s;c.stroke();c.restore();
+
+  // Ears
+  [-1,1].forEach(side=>{
+    clayCirc(c,x+side*12*s,yy-20*s,4*s,5*s,color,1*s);
+    c.save();c.globalAlpha=0.4;c.fillStyle='#FFB0C0';c.beginPath();c.ellipse(x+side*12*s,yy-20*s,2.5*s,3*s,0,0,Math.PI*2);c.fill();c.restore();
+  });
+
+  // Horns
+  [-1,1].forEach(side=>{
+    const hx=x+side*8*s,hy=yy-23*s;
+    const hornG=c.createLinearGradient(hx,hy+3*s,hx,hy-5*s);
+    hornG.addColorStop(0,'#D4C8A0');hornG.addColorStop(0.5,'#F5ECD7');hornG.addColorStop(1,'#C8B888');
+    c.fillStyle=hornG;c.beginPath();
+    c.moveTo(hx-2*s,hy+3*s);c.quadraticCurveTo(hx,hy-6*s,hx+2*s,hy+3*s);c.fill();
+    c.strokeStyle='#B8A878';c.lineWidth=0.8*s;c.stroke();
+  });
+
+  // Head fur tufts
+  c.save();c.strokeStyle=lt(color,10);c.lineWidth=1.5*s;c.lineCap='round';
+  for(let i=-2;i<=2;i++){const tx=x+i*4*s,ty=yy-24*s;
+    c.beginPath();c.moveTo(tx,ty);c.quadraticCurveTo(tx+i*s,ty-6*s,tx+i*2*s,ty-8*s);c.stroke();}
+  c.restore();
+
+  // Eyes (big, expressive)
+  [-1,1].forEach(side=>{
+    const ex=x+side*5*s,ey2=yy-14*s;
+    // White
+    c.fillStyle='#fff';c.beginPath();c.ellipse(ex,ey2,4.5*s,5.5*s,0,0,Math.PI*2);c.fill();
+    c.strokeStyle='rgba(60,40,80,0.2)';c.lineWidth=1*s;c.stroke();
+    // Iris
+    const iG=c.createRadialGradient(ex,ey2+0.5*s,0.5*s,ex,ey2+0.5*s,3.5*s);
+    iG.addColorStop(0,'#6CA6E8');iG.addColorStop(0.7,'#4169E1');iG.addColorStop(1,'#2A3F8F');
+    c.fillStyle=iG;c.beginPath();c.arc(ex,ey2+0.5*s,3.5*s,0,Math.PI*2);c.fill();
+    // Pupil
+    c.fillStyle='#0A0015';c.beginPath();c.arc(ex,ey2+0.5*s,2*s,0,Math.PI*2);c.fill();
+    // Highlight
+    c.fillStyle='rgba(255,255,255,0.85)';c.beginPath();c.ellipse(ex-side*1.5*s,ey2-1.5*s,1.5*s,1.2*s,0,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(ex+side*1*s,ey2+1.5*s,0.7*s,0,Math.PI*2);c.fill();
+    // Upper lid
+    c.fillStyle=color;c.beginPath();
+    c.ellipse(ex,ey2,4.5*s,5.5*s,0,Math.PI,Math.PI*2);
+    c.quadraticCurveTo(ex,ey2-3*s,ex-4.5*s,ey2);c.fill();
+  });
+
+  // Nose
+  c.save();const nG=c.createRadialGradient(x-0.5*s,yy-9*s,0.5*s,x,yy-8*s,3*s);
+  nG.addColorStop(0,'#4A3A5A');nG.addColorStop(1,'#2A1A3A');
+  c.fillStyle=nG;c.beginPath();c.ellipse(x,yy-8*s,3*s,2.2*s,0,0,Math.PI*2);c.fill();
+  c.strokeStyle='#1A0A2A';c.lineWidth=0.8*s;c.stroke();
+  c.fillStyle='rgba(255,255,255,0.3)';c.beginPath();c.ellipse(x-1*s,yy-9*s,1.2*s,0.8*s,0,0,Math.PI*2);c.fill();
+  c.restore();
+
+  // Mouth
+  c.save();c.fillStyle='#8B2252';
+  c.beginPath();c.moveTo(x-6*s,yy-5*s);c.quadraticCurveTo(x,yy+2*s,x+6*s,yy-5*s);
+  c.quadraticCurveTo(x,yy-3*s,x-6*s,yy-5*s);c.fill();
+  c.strokeStyle='#5A1030';c.lineWidth=0.8*s;c.stroke();
+  // Tongue
+  c.fillStyle='#E87A9F';c.beginPath();c.ellipse(x+1*s,yy-2*s,2*s,1.5*s,0,0,Math.PI*2);c.fill();
+  c.restore();
+
+  // Cheeks
+  [-1,1].forEach(side=>{
+    c.save();c.globalAlpha=0.35;c.fillStyle='#FFB0C0';c.beginPath();c.ellipse(x+side*10*s,yy-7*s,3*s,2*s,0,0,Math.PI*2);c.fill();c.restore();
+  });
 }
 
 // ======================================================
