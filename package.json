@@ -1,0 +1,19 @@
+{
+  "name": "city-clean-crew",
+  "version": "1.0.0",
+  "description": "City Clean Crew - A kids game about managing city waste, water, and recycling! 🌟",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["kids", "game", "city", "clean", "recycling", "educational"],
+  "author": "Alex",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

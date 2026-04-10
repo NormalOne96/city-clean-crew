@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>City Clean Crew 🌟</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Fredoka+One&display=swap');
+
+  :root {
+    --clay-sky: #87CEEB;
+    --clay-grass: #5CB85C;
+    --clay-road: #8B7355;
+    --clay-building: #F4A460;
+    --clay-yellow: #FFD700;
+    --clay-orange: #FF8C00;
+    --clay-green: #228B22;
+    --clay-blue: #1E90FF;
+    --clay-red: #DC143C;
+    --clay-purple: #9370DB;
+    --clay-pink: #FF69B4;
+    --clay-white: #FFFEF0;
+    --clay-dark: #2D1B00;
+    --clay-shadow: rgba(0,0,0,0.3);
+    --ui-bg: rgba(255, 252, 220, 0.95);
+    --ui-border: #8B6914;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+
+  body {
+    background: var(--clay-sky);
+    font-family: 'Nunito', sans-serif;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    user-select: none;
+  }
+
+  /* ============ SCREENS ============ */
+  .screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .screen.active { display: flex; }
+
+  /* ============ TITLE SCREEN ============ */
+  #title-screen {
+    background: linear-gradient(180deg, #87CEEB 0%, #98D8C8 40%, #5CB85C 40%, #4CAF50 100%);
+    overflow: hidden;
+  }
+
+  .title-clouds {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 40%;
+    pointer-events: none;
+  }
+
+  .cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+    animation: cloudFloat linear infinite;
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+  }
+
+  @keyframes cloudFloat {
+    0% { transform: translateX(-200px); }
+    100% { transform: translateX(calc(100vw + 200px)); }
+  }
+
+  .title-logo {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(36px, 8vw, 72px);
+    color: white;
+    text-shadow:
+      4px 4px 0 #8B4513,
+      -2px -2px 0 #8B4513,
+      2px -2px 0 #8B4513,
+      -2px 2px 0 #8B4513,
+      0 6px 0 rgba(0,0,0,0.4);
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    line-height: 1.1;
+    animation: titleBounce 2s ease-in-out infinite;
+    padding: 0 20px;
+  }
+
+  @keyframes titleBounce {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-10px) rotate(1deg); }
+  }
+
+  .title-subtitle {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(14px, 3vw, 22px);
+    color: var(--clay-yellow);
+    text-shadow: 2px 2px 0 #8B4513;
+    margin-top: 8px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .title-trucks {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .title-truck {
+    font-size: clamp(40px, 8vw, 64px);
+    animation: truckRock 1s ease-in-out infinite alternate;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  }
+  .title-truck:nth-child(2) { animation-delay: 0.3s; }
+  .title-truck:nth-child(3) { animation-delay: 0.6s; }
+
+  @keyframes truckRock {
+    0% { transform: rotate(-5deg) scale(1); }
+    100% { transform: rotate(5deg) scale(1.05); }
+  }
+
+  .clay-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(18px, 4vw, 28px);
+    padding: 16px 48px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.1s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .clay-btn-primary {
+    background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
+    color: #5C3D00;
+    box-shadow: 0 6px 0 #8B6914, 0 8px 16px rgba(0,0,0,0.3);
+  }
+  .clay-btn-primary:hover, .clay-btn-primary:active {
+    transform: translateY(3px);
+    box-shadow: 0 3px 0 #8B6914, 0 4px 8px rgba(0,0,0,0.3);
+  }
+
+  .clay-btn-secondary {
+    background: linear-gradient(180deg, #98FB98 0%, #5CB85C 100%);
+    color: #1A4D1A;
+    box-shadow: 0 6px 0 #2D6B2D, 0 8px 16px rgba(0,0,0,0.3);
+    margin-top: 12px;
+    font-size: clamp(14px, 3vw, 20px);
+    padding: 12px 36px;
+  }
+
+  /* ============ CHARACTER SELECT ============ */
+  #char-screen {
+    background: linear-gradient(180deg, #FFE5B4 0%, #FFF8DC 100%);
+  }
+
+  .char-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(24px, 5vw, 42px);
+    color: #8B4513;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+  }
+
+  .char-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 700px;
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .char-preview {
+    background: var(--ui-bg);
+    border: 4px solid var(--ui-border);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    min-width: 180px;
+  }
+
+  .char-canvas-wrap {
+    width: 120px;
+    height: 140px;
+    position: relative;
+  }
+
+  #charCanvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+  }
+
+  .char-options {
+    background: var(--ui-bg);
+    border: 4px solid var(--ui-border);
+    border-radius: 24px;
+    padding: 16px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 200px;
+  }
+
+  .option-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .option-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    color: #8B4513;
+    width: 55px;
+    flex-shrink: 0;
+  }
+
+  .color-swatches {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .swatch.active { border-color: #8B4513; transform: scale(1.2); }
+
+  .gender-btns {
+    display: flex;
+    gap: 8px;
+  }
+
+  .gender-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 13px;
+    padding: 6px 14px;
+    border: 3px solid #8B4513;
+    border-radius: 20px;
+    background: #FFF8DC;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .gender-btn.active {
+    background: var(--clay-yellow);
+    transform: scale(1.05);
+  }
+
+  /* ============ GAME SCREEN ============ */
+  #game-screen {
+    background: transparent;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  #gameCanvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+  }
+
+  /* ============ HUD ============ */
+  #hud {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .hud-panel {
+    background: rgba(255, 252, 220, 0.92);
+    border: 3px solid #8B6914;
+    border-radius: 16px;
+    padding: 6px 12px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    pointer-events: all;
+  }
+
+  .hud-score {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(14px, 3vw, 20px);
+    color: #5C3D00;
+  }
+
+  .hud-stars {
+    font-size: clamp(16px, 3vw, 22px);
+    letter-spacing: 2px;
+  }
+
+  .hud-meter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(10px, 2vw, 14px);
+    color: #5C3D00;
+  }
+
+  .meter-bar {
+    width: 80px;
+    height: 14px;
+    background: #D4C08A;
+    border: 2px solid #8B6914;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+  }
+
+  /* ============ VEHICLE SELECTOR ============ */
+  #vehicle-bar {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+  }
+
+  .vehicle-btn {
+    background: rgba(255,252,220,0.92);
+    border: 3px solid #8B6914;
+    border-radius: 16px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: clamp(24px, 5vw, 36px);
+    transition: all 0.15s;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+  }
+
+  .vehicle-btn.active {
+    background: var(--clay-yellow);
+    border-color: #5C3D00;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 0 rgba(0,0,0,0.25);
+  }
+
+  .vehicle-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 9px;
+    color: #5C3D00;
+    margin-top: 2px;
+  }
+
+  /* ============ DPAD CONTROLS ============ */
+  #controls {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    z-index: 100;
+    width: 120px;
+    height: 120px;
+  }
+
+  .dpad {
+    width: 120px;
+    height: 120px;
+    position: relative;
+  }
+
+  .dpad-btn {
+    position: absolute;
+    width: 38px;
+    height: 38px;
+    background: rgba(255,252,220,0.9);
+    border: 3px solid #8B6914;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.25);
+    transition: all 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dpad-btn:active { transform: scale(0.9); box-shadow: none; }
+
+  #dpad-up    { top: 0; left: 50%; transform: translateX(-50%); }
+  #dpad-down  { bottom: 0; left: 50%; transform: translateX(-50%); }
+  #dpad-left  { left: 0; top: 50%; transform: translateY(-50%); }
+  #dpad-right { right: 0; top: 50%; transform: translateY(-50%); }
+  #dpad-up:active { transform: translateX(-50%) scale(0.9); }
+  #dpad-down:active { transform: translateX(-50%) scale(0.9); }
+  #dpad-left:active { transform: translateY(-50%) scale(0.9); }
+  #dpad-right:active { transform: translateY(-50%) scale(0.9); }
+
+  /* ============ ACTION BTN ============ */
+  #action-btn {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    z-index: 100;
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
+    border: 4px solid #8B6914;
+    border-radius: 50%;
+    font-family: 'Fredoka One', cursive;
+    font-size: 13px;
+    color: #5C3D00;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #8B6914;
+    transition: all 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #action-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #8B6914; }
+
+  /* ============ MINIMAP ============ */
+  #minimap {
+    position: absolute;
+    top: 70px;
+    right: 10px;
+    z-index: 100;
+    background: rgba(255,252,220,0.9);
+    border: 3px solid #8B6914;
+    border-radius: 12px;
+    padding: 4px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+  }
+  #minimapCanvas {
+    border-radius: 8px;
+    display: block;
+  }
+
+  /* ============ TASK POPUP ============ */
+  #task-popup {
+    position: absolute;
+    top: 70px;
+    left: 10px;
+    z-index: 100;
+    background: rgba(255,252,220,0.96);
+    border: 3px solid #8B6914;
+    border-radius: 16px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    max-width: 180px;
+    display: none;
+    font-family: 'Fredoka One', cursive;
+    font-size: 12px;
+    color: #5C3D00;
+  }
+
+  .task-title {
+    font-size: 14px;
+    color: #8B0000;
+    margin-bottom: 4px;
+  }
+
+  /* ============ NOTIFICATION ============ */
+  #notification {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 200;
+    background: linear-gradient(180deg, #FFD700, #FFA500);
+    border: 4px solid #8B6914;
+    border-radius: 24px;
+    padding: 16px 32px;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(18px, 4vw, 28px);
+    color: #5C3D00;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  #notification.show { transform: translate(-50%, -50%) scale(1); }
+
+  /* ============ BADGE POPUP ============ */
+  #badge-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 300;
+    background: var(--ui-bg);
+    border: 4px solid var(--clay-yellow);
+    border-radius: 24px;
+    padding: 24px 32px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    min-width: 240px;
+  }
+  #badge-popup.show { transform: translate(-50%, -50%) scale(1); pointer-events: all; }
+
+  .badge-emoji { font-size: 64px; display: block; animation: badgeSpin 0.6s ease; }
+  @keyframes badgeSpin {
+    0% { transform: rotate(-10deg) scale(0.5); }
+    100% { transform: rotate(0deg) scale(1); }
+  }
+  .badge-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: #8B4513;
+    margin: 8px 0 4px;
+  }
+  .badge-desc {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    color: #5C3D00;
+    margin-bottom: 12px;
+  }
+
+  /* ============ PAUSE MENU ============ */
+  #pause-btn {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    z-index: 101;
+    background: rgba(255,252,220,0.9);
+    border: 3px solid #8B6914;
+    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+  }
+
+  /* particles */
+  .particle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 500;
+    font-size: 24px;
+    animation: particleFly 1.2s ease-out forwards;
+  }
+  @keyframes particleFly {
+    0% { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+  }
+
+  /* name input */
+  .name-input {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    padding: 8px 16px;
+    border: 3px solid #8B6914;
+    border-radius: 20px;
+    background: #FFF8DC;
+    color: #5C3D00;
+    text-align: center;
+    width: 140px;
+    outline: none;
+  }
+
+  /* scroll for char screen */
+  .char-scroll {
+    overflow-y: auto;
+    max-height: 85vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    gap: 12px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ======= TITLE SCREEN ======= -->
+<div class="screen active" id="title-screen">
+  <div class="title-clouds" id="titleClouds"></div>
+
+  <div class="title-logo">🏙️ City Clean<br>Crew! 🌟</div>
+  <div class="title-subtitle">Keep the city sparkling clean!</div>
+
+  <div class="title-trucks">
+    <div class="title-truck">🚛</div>
+    <div class="title-truck">♻️</div>
+    <div class="title-truck">🔧</div>
+  </div>
+
+  <button class="clay-btn clay-btn-primary" onclick="showCharSelect()">▶ Play!</button>
+  <button class="clay-btn clay-btn-secondary" onclick="showBadges()">🏆 My Badges</button>
+</div>
+
+<!-- ======= CHARACTER SELECT ======= -->
+<div class="screen" id="char-screen">
+  <div class="char-scroll">
+    <div class="char-title">🎨 Create Your Crew Chief!</div>
+
+    <div class="char-container">
+      <div class="char-preview">
+        <canvas id="charCanvas" width="120" height="140"></canvas>
+        <input class="name-input" id="playerNameInput" type="text" placeholder="Your Name!" maxlength="12">
+      </div>
+
+      <div class="char-options">
+        <div class="option-row">
+          <span class="option-label">Gender</span>
+          <div class="gender-btns">
+            <button class="gender-btn active" id="genderBoy" onclick="setGender('boy')">👦 Boy</button>
+            <button class="gender-btn" id="genderGirl" onclick="setGender('girl')">👧 Girl</button>
+          </div>
+        </div>
+
+        <div class="option-row">
+          <span class="option-label">Skin</span>
+          <div class="color-swatches" id="skinSwatches">
+            <div class="swatch active" style="background:#FDBCB4" onclick="setSkin(0)"></div>
+            <div class="swatch" style="background:#E8A87C" onclick="setSkin(1)"></div>
+            <div class="swatch" style="background:#D4956A" onclick="setSkin(2)"></div>
+            <div class="swatch" style="background:#B5651D" onclick="setSkin(3)"></div>
+            <div class="swatch" style="background:#8B4513" onclick="setSkin(4)"></div>
+          </div>
+        </div>
+
+        <div class="option-row">
+          <span class="option-label">Hair</span>
+          <div class="color-swatches" id="hairSwatches">
+            <div class="swatch active" style="background:#3D2314" onclick="setHair(0)"></div>
+            <div class="swatch" style="background:#FFD700" onclick="setHair(1)"></div>
+            <div class="swatch" style="background:#FF6B6B" onclick="setHair(2)"></div>
+            <div class="swatch" style="background:#1A1A2E" onclick="setHair(3)"></div>
+            <div class="swatch" style="background:#A8D8A8" onclick="setHair(4)"></div>
+          </div>
+        </div>
+
+        <div class="option-row">
+          <span class="option-label">Eyes</span>
+          <div class="color-swatches" id="eyeSwatches">
+            <div class="swatch active" style="background:#4169E1" onclick="setEyes(0)"></div>
+            <div class="swatch" style="background:#228B22" onclick="setEyes(1)"></div>
+            <div class="swatch" style="background:#8B4513" onclick="setEyes(2)"></div>
+            <div class="swatch" style="background:#708090" onclick="setEyes(3)"></div>
+            <div class="swatch" style="background:#8B0000" onclick="setEyes(4)"></div>
+          </div>
+        </div>
+
+        <div class="option-row">
+          <span class="option-label">Uniform</span>
+          <div class="color-swatches" id="uniformSwatches">
+            <div class="swatch active" style="background:#FF8C00" onclick="setUniform(0)"></div>
+            <div class="swatch" style="background:#1E90FF" onclick="setUniform(1)"></div>
+            <div class="swatch" style="background:#228B22" onclick="setUniform(2)"></div>
+            <div class="swatch" style="background:#9370DB" onclick="setUniform(3)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="clay-btn clay-btn-primary" onclick="startGame()" style="margin-top:8px;">
+      🚛 Start Cleaning!
+    </button>
+    <button class="clay-btn clay-btn-secondary" onclick="showScreen('title-screen')" style="margin-top:8px; font-size:14px; padding: 8px 24px;">
+      ← Back
+    </button>
+  </div>
+</div>
+
+<!-- ======= GAME SCREEN ======= -->
+<div class="screen" id="game-screen">
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-panel">
+      <div class="hud-score">⭐ <span id="scoreDisplay">0</span></div>
+      <div class="hud-stars" id="starsDisplay">☆☆☆</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+      <div class="hud-panel hud-meter">
+        <span>💧</span>
+        <div class="meter-bar"><div class="meter-fill" id="waterMeter" style="width:80%;background:linear-gradient(90deg,#1E90FF,#00CED1)"></div></div>
+      </div>
+      <div class="hud-panel hud-meter">
+        <span>🗑️</span>
+        <div class="meter-bar"><div class="meter-fill" id="trashMeter" style="width:30%;background:linear-gradient(90deg,#228B22,#90EE90)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <button id="pause-btn" onclick="togglePause()">⏸</button>
+
+  <!-- Minimap -->
+  <div id="minimap">
+    <canvas id="minimapCanvas" width="90" height="90"></canvas>
+  </div>
+
+  <!-- Task popup -->
+  <div id="task-popup">
+    <div class="task-title">🎯 Mission!</div>
+    <div id="taskText"></div>
+  </div>
+
+  <!-- Vehicle selector -->
+  <div id="vehicle-bar">
+    <button class="vehicle-btn active" id="vbtn-garbage" onclick="switchVehicle('garbage')">
+      🚛<div class="vehicle-label">Trash</div>
+    </button>
+    <button class="vehicle-btn" id="vbtn-recycle" onclick="switchVehicle('recycle')">
+      ♻️<div class="vehicle-label">Recycle</div>
+    </button>
+    <button class="vehicle-btn" id="vbtn-repair" onclick="switchVehicle('repair')">
+      🔧<div class="vehicle-label">Repair</div>
+    </button>
+    <button class="vehicle-btn" id="vbtn-walk" onclick="switchVehicle('walk')">
+      🚶<div class="vehicle-label">Walk</div>
+    </button>
+  </div>
+
+  <!-- D-Pad -->
+  <div id="controls">
+    <div class="dpad">
+      <div class="dpad-btn" id="dpad-up">▲</div>
+      <div class="dpad-btn" id="dpad-down">▼</div>
+      <div class="dpad-btn" id="dpad-left">◄</div>
+      <div class="dpad-btn" id="dpad-right">►</div>
+    </div>
+  </div>
+
+  <!-- Action button -->
+  <button id="action-btn" onclick="doAction()">DO IT!<br>⚡</button>
+
+  <!-- Notification -->
+  <div id="notification"></div>
+
+  <!-- Badge popup -->
+  <div id="badge-popup">
+    <span class="badge-emoji" id="badgeEmoji">🏆</span>
+    <div class="badge-title" id="badgeTitle">Badge Earned!</div>
+    <div class="badge-desc" id="badgeDesc">You did amazing!</div>
+    <button class="clay-btn clay-btn-primary" onclick="closeBadgePopup()" style="font-size:16px;padding:10px 28px;">
+      Awesome! 🎉
+    </button>
+  </div>
+</div>
+
+<!-- ======= BADGES SCREEN ======= -->
+<div class="screen" id="badges-screen" style="background: linear-gradient(180deg,#FFE5B4,#FFF8DC);">
+  <div class="char-title">🏆 Your Badges</div>
+  <div id="badgesGrid" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:400px;padding:10px;overflow-y:auto;max-height:60vh;"></div>
+  <button class="clay-btn clay-btn-secondary" onclick="showScreen('title-screen')" style="margin-top:16px;">← Back</button>
+</div>
+
+<script>
+// ======================================================
+// CITY CLEAN CREW - Main Game Engine
+// ======================================================
+
+const BADGES_DEF = [
+  { id:'first_trash',  emoji:'🗑️',  title:'Trash Rookie',       desc:'Picked up your first piece of trash!' },
+  { id:'first_recycle',emoji:'♻️',  title:'Recycle Star',        desc:'Recycled your first item!' },
+  { id:'first_repair', emoji:'🔧',  title:'Fix-It Friend',       desc:'Fixed your first broken pipe!' },
+  { id:'score_100',    emoji:'💯',  title:'100 Club',            desc:'Scored 100 points!' },
+  { id:'score_500',    emoji:'⭐',  title:'Star Worker',         desc:'Scored 500 points!' },
+  { id:'score_1000',   emoji:'🌟',  title:'Super Cleaner',       desc:'Scored 1000 points!' },
+  { id:'clean_city',   emoji:'🏙️',  title:'Clean City Hero',     desc:'Got the city sparkling clean!' },
+  { id:'no_flood',     emoji:'💧',  title:'Flood Fighter',       desc:'Kept the water level safe!' },
+  { id:'all_vehicles', emoji:'🚛',  title:'Vehicle Master',      desc:'Used all 4 vehicles!' },
+  { id:'combo_3',      emoji:'🔥',  title:'Combo King',          desc:'Got a 3x combo!' },
+  { id:'daily_play',   emoji:'📅',  title:'Daily Hero',          desc:'Played every day this week!' },
+];
+
+// ---- Character state ----
+const playerData = {
+  name: 'Hero',
+  gender: 'boy',
+  skinIdx: 0, hairIdx: 0, eyeIdx: 0, uniformIdx: 0,
+  skinColors:    ['#FDBCB4','#E8A87C','#D4956A','#B5651D','#8B4513'],
+  hairColors:    ['#3D2314','#FFD700','#FF6B6B','#1A1A2E','#A8D8A8'],
+  eyeColors:     ['#4169E1','#228B22','#8B4513','#708090','#8B0000'],
+  uniformColors: ['#FF8C00','#1E90FF','#228B22','#9370DB'],
+};
+
+// ---- Game State ----
+const WORLD_W = 1600, WORLD_H = 1200;
+const TILE = 40;
+
+let game = {
+  score: 0, stars: 0, running: false, paused: false,
+  vehicle: 'garbage',
+  player: { x: 400, y: 400, dx: 0, dy: 0 },
+  camera: { x: 0, y: 0 },
+  trashItems: [], recycleItems: [], brokenPipes: [], brokenDams: [], brokenHydrants: [],
+  waterLevel: 80, cleanLevel: 30,
+  combo: 0, comboTimer: 0,
+  earned_badges: new Set(JSON.parse(localStorage.getItem('ccc_badges')||'[]')),
+  used_vehicles: new Set(),
+  lastTask: null,
+  animFrame: 0,
+  keys: { up:false, down:false, left:false, right:false },
+};
+
+// ---- Canvas Setup ----
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const mmCanvas = document.getElementById('minimapCanvas');
+const mmCtx = mmCanvas.getContext('2d');
+const charCanvas = document.getElementById('charCanvas');
+const charCtx = charCanvas.getContext('2d');
+
+// ---- Resize ----
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// ======================================================
+// SCREEN MANAGEMENT
+// ======================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showCharSelect() { showScreen('char-screen'); drawChar(); }
+
+function showBadges() {
+  showScreen('badges-screen');
+  const grid = document.getElementById('badgesGrid');
+  grid.innerHTML = '';
+  BADGES_DEF.forEach(b => {
+    const earned = game.earned_badges.has(b.id);
+    grid.innerHTML += `
+      <div style="background:${earned?'linear-gradient(180deg,#FFD700,#FFA500)':'#D4C08A'};border:3px solid #8B6914;
+        border-radius:16px;padding:12px 16px;text-align:center;width:110px;box-shadow:0 4px 0 rgba(0,0,0,0.2);
+        opacity:${earned?1:0.5}">
+        <div style="font-size:32px">${b.emoji}</div>
+        <div style="font-family:'Fredoka One';font-size:11px;color:#5C3D00;margin-top:4px">${b.title}</div>
+      </div>`;
+  });
+}
+
+// ======================================================
+// CHARACTER CUSTOMIZATION
+// ======================================================
+function setGender(g) {
+  playerData.gender = g;
+  document.getElementById('genderBoy').classList.toggle('active', g==='boy');
+  document.getElementById('genderGirl').classList.toggle('active', g==='girl');
+  drawChar();
+}
+
+function setSkin(i) {
+  playerData.skinIdx = i;
+  document.querySelectorAll('#skinSwatches .swatch').forEach((s,idx) => s.classList.toggle('active',idx===i));
+  drawChar();
+}
+function setHair(i) {
+  playerData.hairIdx = i;
+  document.querySelectorAll('#hairSwatches .swatch').forEach((s,idx) => s.classList.toggle('active',idx===i));
+  drawChar();
+}
+function setEyes(i) {
+  playerData.eyeIdx = i;
+  document.querySelectorAll('#eyeSwatches .swatch').forEach((s,idx) => s.classList.toggle('active',idx===i));
+  drawChar();
+}
+function setUniform(i) {
+  playerData.uniformIdx = i;
+  document.querySelectorAll('#uniformSwatches .swatch').forEach((s,idx) => s.classList.toggle('active',idx===i));
+  drawChar();
+}
+
+function drawCharOnCanvas(ctx, x, y, scale, gender, skinC, hairC, eyeC, uniformC, frame) {
+  const s = scale;
+  const bob = Math.sin(frame * 0.08) * 2 * s;
+
+  // Shadow
+  ctx.save();
+  ctx.globalAlpha = 0.3;
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.ellipse(x, y + 52*s, 18*s, 5*s, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+
+  const yb = y + bob;
+
+  // Body / Uniform
+  ctx.save();
+  ctx.fillStyle = uniformC;
+  roundRect(ctx, x - 18*s, yb + 18*s, 36*s, 32*s, 8*s);
+  ctx.fill();
+  // Uniform buttons
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  for(let i=0; i<3; i++) {
+    ctx.beginPath();
+    ctx.arc(x, yb + 26*s + i*8*s, 2*s, 0, Math.PI*2);
+    ctx.fill();
+  }
+  // Collar
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.moveTo(x - 6*s, yb + 18*s);
+  ctx.lineTo(x, yb + 24*s);
+  ctx.lineTo(x + 6*s, yb + 18*s);
+  ctx.fill();
+  ctx.restore();
+
+  // Legs
+  ctx.save();
+  ctx.fillStyle = '#3D5A80';
+  roundRect(ctx, x - 16*s, yb + 46*s, 14*s, 16*s, 4*s);
+  ctx.fill();
+  roundRect(ctx, x + 2*s, yb + 46*s, 14*s, 16*s, 4*s);
+  ctx.fill();
+  // Boots
+  ctx.fillStyle = '#2D1B00';
+  roundRect(ctx, x - 17*s, yb + 58*s, 16*s, 8*s, 4*s);
+  ctx.fill();
+  roundRect(ctx, x + 1*s, yb + 58*s, 16*s, 8*s, 4*s);
+  ctx.fill();
+  ctx.restore();
+
+  // Arms
+  ctx.save();
+  ctx.fillStyle = skinC;
+  roundRect(ctx, x - 28*s, yb + 20*s, 12*s, 22*s, 5*s);
+  ctx.fill();
+  roundRect(ctx, x + 16*s, yb + 20*s, 12*s, 22*s, 5*s);
+  ctx.fill();
+  // Gloves
+  ctx.fillStyle = '#FFD700';
+  ctx.beginPath(); ctx.arc(x - 22*s, yb + 43*s, 7*s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 22*s, yb + 43*s, 7*s, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Neck
+  ctx.fillStyle = skinC;
+  roundRect(ctx, x - 7*s, yb + 9*s, 14*s, 10*s, 3*s);
+  ctx.fill();
+
+  // Head
+  ctx.save();
+  ctx.fillStyle = skinC;
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.ellipse(x, yb, 22*s, 24*s, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+
+  // Hair
+  ctx.save();
+  ctx.fillStyle = hairC;
+  if(gender === 'girl') {
+    // Girl hair - longer with pigtails
+    ctx.beginPath();
+    ctx.ellipse(x, yb - 12*s, 23*s, 16*s, 0, Math.PI, Math.PI*2);
+    ctx.fill();
+    // Pigtails
+    ctx.beginPath(); ctx.ellipse(x - 24*s, yb - 4*s, 6*s, 10*s, -0.3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 24*s, yb - 4*s, 6*s, 10*s, 0.3, 0, Math.PI*2); ctx.fill();
+    // Ribbons
+    ctx.fillStyle = '#FF69B4';
+    ctx.beginPath(); ctx.arc(x - 24*s, yb - 12*s, 4*s, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + 24*s, yb - 12*s, 4*s, 0, Math.PI*2); ctx.fill();
+  } else {
+    // Boy hair
+    ctx.beginPath();
+    ctx.ellipse(x, yb - 14*s, 22*s, 14*s, 0, Math.PI, Math.PI*2);
+    ctx.fill();
+    // Spiky bit
+    for(let i=-1; i<=1; i++) {
+      ctx.beginPath();
+      ctx.moveTo(x + i*8*s, yb - 22*s);
+      ctx.lineTo(x + i*8*s - 5*s, yb - 30*s);
+      ctx.lineTo(x + i*8*s + 5*s, yb - 30*s);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+
+  // Eyes
+  ctx.save();
+  // Whites
+  ctx.fillStyle = 'white';
+  ctx.beginPath(); ctx.ellipse(x - 8*s, yb - 3*s, 6*s, 7*s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 8*s, yb - 3*s, 6*s, 7*s, 0, 0, Math.PI*2); ctx.fill();
+  // Irises
+  ctx.fillStyle = eyeC;
+  ctx.beginPath(); ctx.arc(x - 8*s, yb - 2*s, 4*s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 8*s, yb - 2*s, 4*s, 0, Math.PI*2); ctx.fill();
+  // Pupils
+  ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.arc(x - 7*s, yb - 2*s, 2*s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 7*s, yb - 2*s, 2*s, 0, Math.PI*2); ctx.fill();
+  // Shine
+  ctx.fillStyle = 'white';
+  ctx.beginPath(); ctx.arc(x - 6*s, yb - 4*s, 1.5*s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 6*s, yb - 4*s, 1.5*s, 0, Math.PI*2); ctx.fill();
+  // Eyebrows
+  ctx.strokeStyle = hairC;
+  ctx.lineWidth = 2*s;
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x-13*s, yb-11*s); ctx.lineTo(x-3*s, yb-10*s); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x+3*s, yb-10*s); ctx.lineTo(x+13*s, yb-11*s); ctx.stroke();
+  ctx.restore();
+
+  // Nose
+  ctx.save();
+  ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1.5*s; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(x, yb+2*s); ctx.lineTo(x-3*s, yb+6*s); ctx.lineTo(x+3*s, yb+6*s); ctx.stroke();
+  ctx.restore();
+
+  // Smile
+  ctx.save();
+  ctx.strokeStyle = '#C0392B'; ctx.lineWidth = 2*s; ctx.lineCap='round';
+  ctx.beginPath(); ctx.arc(x, yb+7*s, 8*s, 0.1, Math.PI-0.1); ctx.stroke();
+  // Cheeks
+  ctx.fillStyle = 'rgba(255, 150, 150, 0.3)';
+  ctx.beginPath(); ctx.ellipse(x-15*s, yb+5*s, 5*s, 3*s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x+15*s, yb+5*s, 5*s, 3*s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Hat
+  ctx.save();
+  ctx.fillStyle = uniformC;
+  ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1;
+  roundRect(ctx, x - 20*s, yb - 32*s, 40*s, 14*s, 4*s);
+  ctx.fill(); ctx.stroke();
+  roundRect(ctx, x - 14*s, yb - 40*s, 28*s, 12*s, 4*s);
+  ctx.fill(); ctx.stroke();
+  // Logo on hat
+  ctx.fillStyle = '#FFD700';
+  ctx.font = `bold ${10*s}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.fillText('CC', x, yb - 30*s);
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+function drawChar() {
+  charCtx.clearRect(0, 0, 120, 140);
+  const pd = playerData;
+  drawCharOnCanvas(charCtx, 60, 50, 1,
+    pd.gender,
+    pd.skinColors[pd.skinIdx],
+    pd.hairColors[pd.hairIdx],
+    pd.eyeColors[pd.eyeIdx],
+    pd.uniformColors[pd.uniformIdx],
+    Date.now() / 1000 * 10
+  );
+  requestAnimationFrame(drawChar);
+}
+
+// ======================================================
+// WORLD GENERATION
+// ======================================================
+const WORLD = {
+  roads: [], buildings: [], trees: [], water: [],
+  dump: {x:1400, y:100, w:120, h:100},
+  recycleCenter: {x:1400, y:250, w:100, h:80},
+  repairShop: {x:100, y:1050, w:100, h:80},
+};
+
+function generateWorld() {
+  // Roads - grid
+  WORLD.roads = [];
+  for(let x=0; x<WORLD_W; x+=200) {
+    WORLD.roads.push({x, y:0, w:40, h:WORLD_H, dir:'v'});
+  }
+  for(let y=0; y<WORLD_H; y+=200) {
+    WORLD.roads.push({x:0, y, w:WORLD_W, h:40, dir:'h'});
+  }
+
+  // Buildings
+  WORLD.buildings = [];
+  const bColors = ['#F4A460','#DEB887','#CD853F','#D2691E','#A0522D',
+                   '#87CEEB','#B0E0E6','#ADD8E6','#FF7F7F','#FFB6C1'];
+  const roofColors = ['#DC143C','#B22222','#8B0000','#FF6347','#D2691E',
+                      '#228B22','#006400','#2E8B57'];
+  for(let bx=60; bx<WORLD_W-100; bx+=200) {
+    for(let by=60; by<WORLD_H-100; by+=200) {
+      if(Math.random()>0.3) {
+        const w = 80 + Math.random()*60;
+        const h = 60 + Math.random()*80;
+        WORLD.buildings.push({
+          x: bx + Math.random()*40,
+          y: by + Math.random()*40,
+          w, h,
+          color: bColors[Math.floor(Math.random()*bColors.length)],
+          roofColor: roofColors[Math.floor(Math.random()*roofColors.length)],
+          windows: Math.floor(Math.random()*6)+2,
+          type: ['house','shop','apartment','school'][Math.floor(Math.random()*4)]
+        });
+      }
+    }
+  }
+
+  // Trees
+  WORLD.trees = [];
+  for(let i=0; i<60; i++) {
+    WORLD.trees.push({
+      x: Math.random()*WORLD_W,
+      y: Math.random()*WORLD_H,
+      size: 20 + Math.random()*20,
+      color: ['#228B22','#2E8B57','#3CB371','#006400'][Math.floor(Math.random()*4)]
+    });
+  }
+
+  // Water (river)
+  WORLD.water = [
+    {x:550, y:0, w:80, h:500},
+    {x:550, y:460, w:600, h:80},
+    {x:1050, y:460, w:80, h:400},
+  ];
+
+  spawnCityItems();
+}
+
+function spawnCityItems() {
+  game.trashItems = [];
+  game.recycleItems = [];
+  game.brokenPipes = [];
+  game.brokenDams = [];
+  game.brokenHydrants = [];
+
+  for(let i=0; i<20; i++) {
+    game.trashItems.push({
+      x: 50 + Math.random()*(WORLD_W-100),
+      y: 50 + Math.random()*(WORLD_H-100),
+      type: ['🗑️','🍕','🥤','📦','👟'][Math.floor(Math.random()*5)],
+      collected: false
+    });
+    game.recycleItems.push({
+      x: 50 + Math.random()*(WORLD_W-100),
+      y: 50 + Math.random()*(WORLD_H-100),
+      type: ['♻️','🧴','📰','🥫','🍾'][Math.floor(Math.random()*5)],
+      collected: false
+    });
+  }
+
+  for(let i=0; i<8; i++) {
+    game.brokenPipes.push({
+      x: 50 + Math.random()*(WORLD_W-100),
+      y: 50 + Math.random()*(WORLD_H-100),
+      fixed: false, type:'pipe'
+    });
+    if(i<4) game.brokenDams.push({
+      x: 50 + Math.random()*(WORLD_W-100),
+      y: 50 + Math.random()*(WORLD_H-100),
+      fixed: false, type:'dam'
+    });
+    if(i<6) game.brokenHydrants.push({
+      x: 50 + Math.random()*(WORLD_W-100),
+      y: 50 + Math.random()*(WORLD_H-100),
+      fixed: false, type:'hydrant'
+    });
+  }
+
+  updateMissions();
+}
+
+// ======================================================
+// MISSIONS
+// ======================================================
+const MISSIONS = [
+  { id:'trash5',  text:'Pick up 5 trash items 🗑️',    check: ()=> game.trashItems.filter(t=>t.collected).length >= 5 },
+  { id:'recycle3',text:'Recycle 3 items ♻️',          check: ()=> game.recycleItems.filter(r=>r.collected).length >= 3 },
+  { id:'pipes3',  text:'Fix 3 broken pipes 🔧',       check: ()=> game.brokenPipes.filter(p=>p.fixed).length >= 3 },
+  { id:'hydrant2',text:'Fix 2 fire hydrants 🚒',      check: ()=> game.brokenHydrants.filter(h=>h.fixed).length >= 2 },
+  { id:'water80', text:'Keep water clean! 💧',        check: ()=> game.waterLevel >= 80 },
+  { id:'score200',text:'Score 200 points! ⭐',        check: ()=> game.score >= 200 },
+];
+
+let currentMission = null;
+let completedMissions = 0;
+
+function updateMissions() {
+  const avail = MISSIONS.filter(m => !m._done);
+  if(avail.length === 0) { completedMissions = 0; MISSIONS.forEach(m=>delete m._done); }
+  currentMission = avail[Math.floor(Math.random()*avail.length)] || MISSIONS[0];
+  document.getElementById('taskText').textContent = currentMission.text;
+  document.getElementById('task-popup').style.display = 'block';
+}
+
+function checkMissions() {
+  if(currentMission && currentMission.check()) {
+    currentMission._done = true;
+    completedMissions++;
+    game.score += 50;
+    game.stars = Math.min(3, Math.floor(completedMissions/2));
+    showNotification(`Mission Complete! +50pts 🎉`);
+    setTimeout(updateMissions, 2000);
+
+    if(completedMissions >= 6) earnBadge('clean_city');
+    if(game.score >= 200) earnBadge('score_200');
+  }
+}
+
+// ======================================================
+// DRAWING ENGINE
+// ======================================================
+function drawWorld() {
+  const cx = game.camera.x, cy = game.camera.y;
+  const W = canvas.width, H = canvas.height;
+
+  // Sky / Grass BG
+  ctx.fillStyle = '#7EC850';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grass texture dots
+  ctx.fillStyle = '#6DB840';
+  for(let gx=0; gx<W; gx+=30) {
+    for(let gy=0; gy<H; gy+=30) {
+      if((gx+gy)%60===0) {
+        ctx.beginPath();
+        ctx.arc(gx-cx%30, gy-cy%30, 3, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+  }
+
+  // Water
+  WORLD.water.forEach(w => {
+    const wx = w.x - cx, wy = w.y - cy;
+    if(wx > W+200 || wx+w.w < -200 || wy > H+200 || wy+w.h < -200) return;
+    const waveAnim = Math.sin(Date.now()/800) * 4;
+    ctx.fillStyle = '#2980B9';
+    ctx.fillRect(wx, wy, w.w, w.h);
+    ctx.fillStyle = 'rgba(100, 180, 255, 0.4)';
+    for(let wi=0; wi<w.w; wi+=40) {
+      ctx.beginPath();
+      ctx.arc(wx+wi+waveAnim, wy+w.h/2, 12, 0, Math.PI);
+      ctx.fill();
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(wx, wy); ctx.lineTo(wx+w.w, wy);
+    ctx.stroke();
+  });
+
+  // Roads
+  WORLD.roads.forEach(r => {
+    const rx=r.x-cx, ry=r.y-cy;
+    if(rx>W+50||rx+r.w<-50||ry>H+50||ry+r.h<-50) return;
+    ctx.fillStyle = '#8B7355';
+    ctx.fillRect(rx, ry, r.w, r.h);
+    // Dashed center line
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([15, 15]);
+    ctx.beginPath();
+    if(r.dir==='h') {
+      ctx.moveTo(rx, ry+r.h/2); ctx.lineTo(rx+r.w, ry+r.h/2);
+    } else {
+      ctx.moveTo(rx+r.w/2, ry); ctx.lineTo(rx+r.w/2, ry+r.h);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Buildings
+  WORLD.buildings.forEach(b => {
+    const bx=b.x-cx, by=b.y-cy;
+    if(bx>W+100||bx+b.w<-100||by>H+150||by+b.h<-100) return;
+
+    // Clay shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.fillRect(bx+6, by+8, b.w, b.h);
+
+    // Body
+    ctx.fillStyle = b.color;
+    roundRect(ctx, bx, by, b.w, b.h, 6);
+    ctx.fill();
+
+    // Stroke
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 2;
+    roundRect(ctx, bx, by, b.w, b.h, 6); ctx.stroke();
+
+    // Roof
+    ctx.fillStyle = b.roofColor;
+    if(b.type==='house' || b.type==='shop') {
+      ctx.beginPath();
+      ctx.moveTo(bx-6, by);
+      ctx.lineTo(bx+b.w/2, by-30);
+      ctx.lineTo(bx+b.w+6, by);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,0.2)'; ctx.lineWidth=2; ctx.stroke();
+    } else {
+      ctx.fillRect(bx, by-8, b.w, 12);
+    }
+
+    // Windows
+    ctx.fillStyle = 'rgba(200,230,255,0.8)';
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth=1;
+    const wPerRow = Math.min(b.windows, 3);
+    const wRows = Math.ceil(b.windows / wPerRow);
+    for(let r=0; r<wRows; r++) {
+      for(let c=0; c<wPerRow; c++) {
+        const wx2 = bx + 8 + c*(b.w/wPerRow);
+        const wy2 = by + 12 + r*20;
+        if(wy2 < by+b.h-10) {
+          roundRect(ctx, wx2, wy2, b.w/wPerRow - 12, 14, 3);
+          ctx.fill(); ctx.stroke();
+          // Light shimmer
+          ctx.fillStyle = 'rgba(255,255,255,0.4)';
+          ctx.fillRect(wx2+2, wy2+2, 3, 3);
+          ctx.fillStyle = 'rgba(200,230,255,0.8)';
+        }
+      }
+    }
+
+    // Door
+    if(b.type!=='apartment') {
+      ctx.fillStyle = b.roofColor;
+      roundRect(ctx, bx+b.w/2-8, by+b.h-20, 16, 20, 3);
+      ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,0.2)'; ctx.stroke();
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath(); ctx.arc(bx+b.w/2+5, by+b.h-10, 2, 0, Math.PI*2); ctx.fill();
+    }
+
+    // Labels
+    ctx.font = '10px Fredoka One, sans-serif';
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.textAlign = 'center';
+    const labels = {house:'🏠',shop:'🏪',apartment:'🏢',school:'🏫'};
+    ctx.fillText(labels[b.type]||'🏠', bx+b.w/2, by+b.h/2);
+  });
+
+  // Trees
+  WORLD.trees.forEach(t => {
+    const tx=t.x-cx, ty=t.y-cy;
+    if(tx<-60||tx>W+60||ty<-60||ty>H+60) return;
+    // Trunk
+    ctx.fillStyle = '#8B4513';
+    roundRect(ctx, tx-5, ty, 10, 20, 3); ctx.fill();
+    // Canopy shadow
+    ctx.fillStyle = 'rgba(0,100,0,0.2)';
+    ctx.beginPath(); ctx.arc(tx+3, ty+3, t.size, 0, Math.PI*2); ctx.fill();
+    // Canopy
+    ctx.fillStyle = t.color;
+    ctx.beginPath(); ctx.arc(tx, ty, t.size, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.15)'; ctx.lineWidth=2; ctx.stroke();
+    // Highlight
+    ctx.fillStyle='rgba(255,255,255,0.15)';
+    ctx.beginPath(); ctx.arc(tx-t.size*0.3, ty-t.size*0.3, t.size*0.4, 0, Math.PI*2); ctx.fill();
+  });
+
+  // Special buildings
+  drawSpecialBuilding(WORLD.dump, cx, cy, '#8B7355', '🗑️ DUMP', '#654321');
+  drawSpecialBuilding(WORLD.recycleCenter, cx, cy, '#228B22', '♻️ RECYCLE', '#1A5C1A');
+  drawSpecialBuilding(WORLD.repairShop, cx, cy, '#1E90FF', '🔧 REPAIR', '#1565A0');
+
+  // Broken items
+  const bounce = Math.sin(Date.now()/400) * 4;
+  [...game.brokenPipes, ...game.brokenDams, ...game.brokenHydrants].forEach(item => {
+    if(item.fixed) return;
+    const ix=item.x-cx, iy=item.y-cy;
+    if(ix<-50||ix>W+50||iy<-50||iy>H+50) return;
+    const icon = item.type==='pipe'?'💧':item.type==='dam'?'🌊':'🚒';
+    ctx.font = '24px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(icon, ix, iy + bounce);
+    ctx.fillText('⚠️', ix+14, iy-14);
+  });
+
+  // Collectibles
+  game.trashItems.forEach(item => {
+    if(item.collected) return;
+    const ix=item.x-cx, iy=item.y-cy;
+    if(ix<-50||ix>W+50||iy<-50||iy>H+50) return;
+    ctx.font = '22px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(item.type, ix, iy + bounce);
+  });
+
+  game.recycleItems.forEach(item => {
+    if(item.collected) return;
+    const ix=item.x-cx, iy=item.y-cy;
+    if(ix<-50||ix>W+50||iy<-50||iy>H+50) return;
+    ctx.font = '22px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(item.type, ix, iy + Math.cos(Date.now()/400) * 4);
+  });
+
+  // Player
+  drawPlayer();
+
+  // Combo display
+  if(game.combo > 1) {
+    ctx.font = `bold ${Math.min(30, 14 + game.combo*4)}px Fredoka One, sans-serif`;
+    ctx.fillStyle = `hsl(${game.combo*20}, 100%, 50%)`;
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.textAlign = 'center';
+    const comboText = `${game.combo}x COMBO! 🔥`;
+    ctx.strokeText(comboText, W/2, 120);
+    ctx.fillText(comboText, W/2, 120);
+  }
+}
+
+function drawSpecialBuilding(b, cx, cy, color, label, roofC) {
+  const bx=b.x-cx, by=b.y-cy;
+  if(bx>canvas.width+100||bx+b.w<-100||by>canvas.height+100||by+b.h<-100) return;
+
+  ctx.fillStyle='rgba(0,0,0,0.15)';
+  ctx.fillRect(bx+6,by+8,b.w,b.h);
+
+  ctx.fillStyle=color;
+  roundRect(ctx,bx,by,b.w,b.h,10); ctx.fill();
+
+  ctx.strokeStyle='rgba(0,0,0,0.25)'; ctx.lineWidth=3;
+  roundRect(ctx,bx,by,b.w,b.h,10); ctx.stroke();
+
+  ctx.fillStyle=roofC;
+  ctx.fillRect(bx,by-10,b.w,14);
+  roundRect(ctx,bx,by-10,b.w,14,4); ctx.fill();
+
+  ctx.font='bold 11px Fredoka One, sans-serif';
+  ctx.fillStyle='white';
+  ctx.textAlign='center';
+  ctx.fillText(label, bx+b.w/2, by+b.h/2+4);
+
+  // Blinking arrow if player is on the right vehicle
+  const shouldGlow =
+    (label.includes('DUMP') && game.vehicle==='garbage') ||
+    (label.includes('RECYCLE') && game.vehicle==='recycle') ||
+    (label.includes('REPAIR') && game.vehicle==='repair');
+  if(shouldGlow) {
+    ctx.fillStyle=`rgba(255,215,0,${0.4+Math.sin(Date.now()/300)*0.4})`;
+    roundRect(ctx,bx-4,by-4,b.w+8,b.h+8,14); ctx.fill();
+    ctx.font='20px Arial';
+    ctx.fillText('⬇️',bx+b.w/2,by-16);
+  }
+}
+
+function drawPlayer() {
+  const W = canvas.width, H = canvas.height;
+  const px = W/2, py = H/2;
+
+  if(game.vehicle==='walk') {
+    drawCharOnCanvas(ctx, px, py-30, 0.9,
+      playerData.gender,
+      playerData.skinColors[playerData.skinIdx],
+      playerData.hairColors[playerData.hairIdx],
+      playerData.eyeColors[playerData.eyeIdx],
+      playerData.uniformColors[playerData.uniformIdx],
+      game.animFrame
+    );
+  } else {
+    drawTruck(ctx, px, py, game.vehicle, game.animFrame);
+  }
+}
+
+function drawTruck(ctx, x, y, type, frame) {
+  const wobble = Math.sin(frame*0.12)*2;
+  const colors = { garbage:'#FFD700', recycle:'#228B22', repair:'#1E90FF' };
+  const c = colors[type] || '#FFD700';
+
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.2)';
+  ctx.beginPath(); ctx.ellipse(x+4,y+28,28,7,0,0,Math.PI*2); ctx.fill();
+
+  // Body
+  ctx.fillStyle=c;
+  roundRect(ctx,x-30,y-20+wobble,60,40,8); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,0.2)'; ctx.lineWidth=2;
+  roundRect(ctx,x-30,y-20+wobble,60,40,8); ctx.stroke();
+
+  // Cab
+  ctx.fillStyle=c;
+  roundRect(ctx,x-30,y-36+wobble,32,18,6); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,0.2)'; ctx.stroke();
+
+  // Windshield
+  ctx.fillStyle='rgba(150,210,255,0.8)';
+  roundRect(ctx,x-27,y-33+wobble,26,12,4); ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.3)';
+  ctx.fillRect(x-26,y-32+wobble,6,5);
+
+  // Wheels
+  [x-18,x+16].forEach(wx => {
+    const spin = (frame*0.15);
+    ctx.fillStyle='#2D2D2D';
+    ctx.beginPath(); ctx.arc(wx,y+22+wobble,10,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#555'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#888';
+    ctx.beginPath(); ctx.arc(wx,y+22+wobble,5,0,Math.PI*2); ctx.fill();
+    // Spin marks
+    ctx.strokeStyle='#aaa'; ctx.lineWidth=1;
+    for(let i=0;i<4;i++){
+      const a = spin + i*Math.PI/2;
+      ctx.beginPath();
+      ctx.moveTo(wx+Math.cos(a)*3, y+22+wobble+Math.sin(a)*3);
+      ctx.lineTo(wx+Math.cos(a)*8, y+22+wobble+Math.sin(a)*8);
+      ctx.stroke();
+    }
+  });
+
+  // Type-specific details
+  ctx.font='16px Arial'; ctx.textAlign='center';
+  if(type==='garbage') {
+    ctx.fillText('🗑️', x+10, y+wobble);
+    // Bin on back
+    ctx.fillStyle='#888';
+    roundRect(ctx,x+10,y-22+wobble,22,36,4); ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.3)'; ctx.stroke();
+  } else if(type==='recycle') {
+    ctx.fillText('♻️', x+8, y+wobble);
+    ctx.fillStyle='rgba(0,180,0,0.7)';
+    roundRect(ctx,x+8,y-22+wobble,24,36,4); ctx.fill();
+  } else if(type==='repair') {
+    ctx.fillText('🔧', x+8, y+wobble);
+    // Crane arm
+    ctx.strokeStyle='#888'; ctx.lineWidth=4;
+    ctx.beginPath();
+    ctx.moveTo(x+20,y-20+wobble);
+    ctx.lineTo(x+36,y-36+wobble);
+    ctx.lineTo(x+36,y-20+wobble);
+    ctx.stroke();
+  }
+
+  // Headlights
+  ctx.fillStyle='rgba(255,255,150,0.8)';
+  ctx.beginPath(); ctx.arc(x-28,y-5+wobble,4,0,Math.PI*2); ctx.fill();
+
+  // Player character (small) in cab
+  ctx.font='12px Arial';
+  ctx.fillText(playerData.gender==='girl'?'👧':'👦', x-16,y-26+wobble);
+}
+
+// ======================================================
+// MINIMAP
+// ======================================================
+function drawMinimap() {
+  const mw=90, mh=90;
+  const sx = mw/WORLD_W, sy = mh/WORLD_H;
+
+  mmCtx.fillStyle='#5CB85C';
+  mmCtx.fillRect(0,0,mw,mh);
+
+  // Water
+  mmCtx.fillStyle='#2980B9';
+  WORLD.water.forEach(w=>mmCtx.fillRect(w.x*sx,w.y*sy,w.w*sx,w.h*sy));
+
+  // Roads
+  mmCtx.fillStyle='#8B7355';
+  WORLD.roads.forEach(r=>mmCtx.fillRect(r.x*sx,r.y*sy,Math.max(r.w*sx,2),Math.max(r.h*sy,2)));
+
+  // Special
+  mmCtx.fillStyle='#654321';
+  mmCtx.fillRect(WORLD.dump.x*sx,WORLD.dump.y*sy,8,8);
+  mmCtx.fillStyle='#228B22';
+  mmCtx.fillRect(WORLD.recycleCenter.x*sx,WORLD.recycleCenter.y*sy,8,8);
+  mmCtx.fillStyle='#1E90FF';
+  mmCtx.fillRect(WORLD.repairShop.x*sx,WORLD.repairShop.y*sy,8,8);
+
+  // Items
+  mmCtx.fillStyle='#FF4444';
+  game.trashItems.filter(t=>!t.collected).forEach(t=>{
+    mmCtx.fillRect(t.x*sx-1,t.y*sy-1,3,3);
+  });
+  mmCtx.fillStyle='#00FF00';
+  game.recycleItems.filter(r=>!r.collected).forEach(r=>{
+    mmCtx.fillRect(r.x*sx-1,r.y*sy-1,3,3);
+  });
+  mmCtx.fillStyle='#00FFFF';
+  [...game.brokenPipes,...game.brokenDams,...game.brokenHydrants].filter(b=>!b.fixed).forEach(b=>{
+    mmCtx.fillRect(b.x*sx-1,b.y*sy-1,3,3);
+  });
+
+  // Player
+  const px = game.player.x * sx;
+  const py = game.player.y * sy;
+  mmCtx.fillStyle='#FF0';
+  mmCtx.beginPath(); mmCtx.arc(px,py,3,0,Math.PI*2); mmCtx.fill();
+  mmCtx.strokeStyle='#000'; mmCtx.lineWidth=1; mmCtx.stroke();
+}
+
+// ======================================================
+// GAME LOOP
+// ======================================================
+let lastTime = 0;
+
+function gameLoop(timestamp) {
+  if(!game.running) return;
+  const dt = Math.min(timestamp - lastTime, 50);
+  lastTime = timestamp;
+
+  if(!game.paused) {
+    updateGame(dt);
+    drawWorld();
+    drawMinimap();
+    updateHUD();
+    game.animFrame++;
+    game.comboTimer = Math.max(0, game.comboTimer - dt);
+    if(game.comboTimer === 0) game.combo = 0;
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+function updateGame(dt) {
+  const speed = game.vehicle==='walk' ? 2.5 : 4;
+  let moved = false;
+
+  if(game.keys.up)    { game.player.y -= speed; moved=true; }
+  if(game.keys.down)  { game.player.y += speed; moved=true; }
+  if(game.keys.left)  { game.player.x -= speed; moved=true; }
+  if(game.keys.right) { game.player.x += speed; moved=true; }
+
+  // Bounds
+  game.player.x = Math.max(20, Math.min(WORLD_W-20, game.player.x));
+  game.player.y = Math.max(20, Math.min(WORLD_H-20, game.player.y));
+
+  // Camera follows player
+  game.camera.x = game.player.x - canvas.width/2;
+  game.camera.y = game.player.y - canvas.height/2;
+  game.camera.x = Math.max(0, Math.min(WORLD_W-canvas.width, game.camera.x));
+  game.camera.y = Math.max(0, Math.min(WORLD_H-canvas.height, game.camera.y));
+
+  // Auto-collect nearby items
+  const PICKUP_DIST = game.vehicle==='walk' ? 30 : 50;
+
+  if(game.vehicle==='garbage' || game.vehicle==='walk') {
+    game.trashItems.forEach(item => {
+      if(item.collected) return;
+      if(dist(game.player, item) < PICKUP_DIST) autoCollect(item, 'trash');
+    });
+  }
+
+  if(game.vehicle==='recycle' || game.vehicle==='walk') {
+    game.recycleItems.forEach(item => {
+      if(item.collected) return;
+      if(dist(game.player, item) < PICKUP_DIST) autoCollect(item, 'recycle');
+    });
+  }
+
+  // Water level decay
+  const unfixedPipes = [...game.brokenPipes,...game.brokenDams,...game.brokenHydrants].filter(b=>!b.fixed).length;
+  game.waterLevel = Math.max(0, Math.min(100,
+    game.waterLevel - unfixedPipes*0.003 + 0.01
+  ));
+
+  // Trash cleanliness
+  const uncollected = game.trashItems.filter(t=>!t.collected).length + game.recycleItems.filter(r=>!r.collected).length;
+  game.cleanLevel = Math.max(0, 100 - uncollected*2.5);
+
+  // Check missions
+  checkMissions();
+
+  // Badge checks
+  if(game.waterLevel >= 80) earnBadge('no_flood');
+  if(game.score >= 100) earnBadge('score_100');
+  if(game.score >= 500) earnBadge('score_500');
+  if(game.score >= 1000) earnBadge('score_1000');
+  if(game.used_vehicles.size >= 4) earnBadge('all_vehicles');
+  if(game.combo >= 3) earnBadge('combo_3');
+}
+
+function dist(a, b) {
+  return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);
+}
+
+function autoCollect(item, type) {
+  item.collected = true;
+  game.combo++;
+  game.comboTimer = 2500;
+  const pts = 10 * game.combo;
+  game.score += pts;
+  spawnParticle(item.x - game.camera.x, item.y - game.camera.y, type==='trash'?'🗑️':'♻️');
+  showNotification(`+${pts}${game.combo>1?' 🔥'+game.combo+'x':''}`);
+
+  if(type==='trash') earnBadge('first_trash');
+  if(type==='recycle') earnBadge('first_recycle');
+
+  // Respawn after delay
+  setTimeout(()=>{
+    item.collected = false;
+    item.x = 50 + Math.random()*(WORLD_W-100);
+    item.y = 50 + Math.random()*(WORLD_H-100);
+  }, 15000);
+}
+
+function doAction() {
+  // Manual action button - fix nearest broken item
+  const REPAIR_DIST = 80;
+  const broken = [...game.brokenPipes,...game.brokenDams,...game.brokenHydrants].filter(b=>!b.fixed);
+  const nearby = broken.find(b => dist(game.player, b) < REPAIR_DIST);
+
+  if(nearby && game.vehicle==='repair') {
+    nearby.fixed = true;
+    game.score += 30;
+    game.combo++;
+    game.comboTimer = 2500;
+    spawnParticle(canvas.width/2, canvas.height/2, '🔧');
+    showNotification(`Fixed! +30pts 🔧`);
+    earnBadge('first_repair');
+    setTimeout(()=>{
+      nearby.fixed = false;
+      nearby.x = 50 + Math.random()*(WORLD_W-100);
+      nearby.y = 50 + Math.random()*(WORLD_H-100);
+    }, 20000);
+  } else if(nearby && game.vehicle!=='repair') {
+    showNotification(`Switch to Repair truck! 🔧`);
+  } else {
+    showNotification(`Nothing nearby! Keep exploring! 🗺️`);
+  }
+}
+
+// ======================================================
+// HUD UPDATES
+// ======================================================
+function updateHUD() {
+  document.getElementById('scoreDisplay').textContent = game.score;
+  const starMap = ['☆☆☆','⭐☆☆','⭐⭐☆','⭐⭐⭐'];
+  document.getElementById('starsDisplay').textContent = starMap[game.stars];
+  document.getElementById('waterMeter').style.width = game.waterLevel+'%';
+  document.getElementById('trashMeter').style.width = game.cleanLevel+'%';
+}
+
+// ======================================================
+// VEHICLE SWITCHING
+// ======================================================
+function switchVehicle(v) {
+  game.vehicle = v;
+  game.used_vehicles.add(v);
+  ['garbage','recycle','repair','walk'].forEach(t => {
+    document.getElementById('vbtn-'+t).classList.toggle('active', t===v);
+  });
+  const names = {garbage:'Garbage Truck 🚛',recycle:'Recycle Truck ♻️',repair:'Repair Van 🔧',walk:'Walking 🚶'};
+  showNotification(`${names[v]}!`);
+}
+
+// ======================================================
+// NOTIFICATIONS & EFFECTS
+// ======================================================
+let notifTimer = null;
+function showNotification(text) {
+  const el = document.getElementById('notification');
+  el.textContent = text;
+  el.classList.add('show');
+  clearTimeout(notifTimer);
+  notifTimer = setTimeout(()=>el.classList.remove('show'), 1800);
+}
+
+function spawnParticle(x, y, emoji) {
+  for(let i=0; i<5; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.textContent = emoji;
+    const angle = Math.random()*Math.PI*2;
+    const d = 40+Math.random()*60;
+    p.style.left = x+'px';
+    p.style.top = y+'px';
+    p.style.setProperty('--dx', Math.cos(angle)*d+'px');
+    p.style.setProperty('--dy', Math.sin(angle)*d-40+'px');
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), 1300);
+  }
+}
+
+// ======================================================
+// BADGES
+// ======================================================
+function earnBadge(id) {
+  if(game.earned_badges.has(id)) return;
+  game.earned_badges.add(id);
+  localStorage.setItem('ccc_badges', JSON.stringify([...game.earned_badges]));
+
+  const def = BADGES_DEF.find(b=>b.id===id);
+  if(!def) return;
+
+  document.getElementById('badgeEmoji').textContent = def.emoji;
+  document.getElementById('badgeTitle').textContent = def.title;
+  document.getElementById('badgeDesc').textContent = def.desc;
+  document.getElementById('badge-popup').classList.add('show');
+}
+
+function closeBadgePopup() {
+  document.getElementById('badge-popup').classList.remove('show');
+}
+
+// ======================================================
+// INPUT
+// ======================================================
+function setupInput() {
+  const map = {
+    ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',
+    KeyW:'up',KeyS:'down',KeyA:'left',KeyD:'right',
+  };
+  window.addEventListener('keydown', e=>{
+    if(map[e.code]) game.keys[map[e.code]]=true;
+  });
+  window.addEventListener('keyup', e=>{
+    if(map[e.code]) game.keys[map[e.code]]=false;
+  });
+
+  // D-pad touch
+  function hold(dir, on) {
+    document.getElementById('dpad-'+dir).addEventListener('touchstart',e=>{e.preventDefault();game.keys[dir]=on;},{passive:false});
+    document.getElementById('dpad-'+dir).addEventListener('touchend',e=>{e.preventDefault();game.keys[dir]=false;},{passive:false});
+    document.getElementById('dpad-'+dir).addEventListener('mousedown',()=>game.keys[dir]=on);
+    document.getElementById('dpad-'+dir).addEventListener('mouseup',()=>game.keys[dir]=false);
+  }
+  hold('up',true); hold('down',true); hold('left',true); hold('right',true);
+
+  // Touch-to-move on canvas
+  canvas.addEventListener('touchstart', e=>{
+    e.preventDefault();
+    handleTouchMove(e.touches[0]);
+  },{passive:false});
+  canvas.addEventListener('touchmove', e=>{
+    e.preventDefault();
+    handleTouchMove(e.touches[0]);
+  },{passive:false});
+  canvas.addEventListener('touchend', e=>{
+    game.keys = {up:false,down:false,left:false,right:false};
+  },{passive:false});
+}
+
+function handleTouchMove(touch) {
+  const rect = canvas.getBoundingClientRect();
+  const tx = touch.clientX - rect.left;
+  const ty = touch.clientY - rect.top;
+  const cx = canvas.width/2, cy = canvas.height/2;
+  const dx = tx-cx, dy = ty-cy;
+  const deadzone = 40;
+
+  game.keys.up    = dy < -deadzone;
+  game.keys.down  = dy > deadzone;
+  game.keys.left  = dx < -deadzone;
+  game.keys.right = dx > deadzone;
+}
+
+// ======================================================
+// PAUSE
+// ======================================================
+function togglePause() {
+  game.paused = !game.paused;
+  document.getElementById('pause-btn').textContent = game.paused ? '▶' : '⏸';
+  if(game.paused) showNotification('Paused! ⏸');
+}
+
+// ======================================================
+// START GAME
+// ======================================================
+function startGame() {
+  playerData.name = document.getElementById('playerNameInput').value || 'Hero';
+  game.running = false;
+  game.score = 0;
+  game.stars = 0;
+  game.combo = 0;
+  game.comboTimer = 0;
+  game.waterLevel = 80;
+  game.cleanLevel = 30;
+  game.used_vehicles = new Set(['garbage']);
+  game.vehicle = 'garbage';
+  game.player = { x:400, y:400, dx:0, dy:0 };
+  game.keys = { up:false, down:false, left:false, right:false };
+  game.paused = false;
+
+  generateWorld();
+  showScreen('game-screen');
+  resize();
+  setupInput();
+
+  // Update vehicle buttons
+  ['garbage','recycle','repair','walk'].forEach(t => {
+    document.getElementById('vbtn-'+t).classList.toggle('active', t==='garbage');
+  });
+
+  game.running = true;
+  lastTime = performance.now();
+  requestAnimationFrame(gameLoop);
+
+  showNotification(`Welcome, ${playerData.name}! 🌟 Keep the city clean!`);
+}
+
+// ======================================================
+// TITLE SCREEN CLOUDS
+// ======================================================
+function setupClouds() {
+  const container = document.getElementById('titleClouds');
+  for(let i=0; i<6; i++) {
+    const cloud = document.createElement('div');
+    cloud.className = 'cloud';
+    const w = 80 + Math.random()*120;
+    const h = 30 + Math.random()*30;
+    const top = Math.random()*80;
+    const duration = 20 + Math.random()*30;
+    const delay = -Math.random()*30;
+    cloud.style.cssText = `
+      width:${w}px;height:${h}px;
+      top:${top}%;
+      animation-duration:${duration}s;
+      animation-delay:${delay}s;
+    `;
+    cloud.style.setProperty('--start',`${-w}px`);
+    container.appendChild(cloud);
+  }
+}
+
+setupClouds();
+</script>
+</body>
+</html>
