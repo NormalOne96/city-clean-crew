@@ -1917,9 +1917,11 @@ function genWorld(){
   W.water=[{x:650,y:0,w:100,h:600},{x:650,y:560,w:700,h:100},{x:1250,y:560,w:100,h:500}];
   // Home base building
   W.homeBase={x:350,y:350,w:100,h:80};
-  // Initialize story mission
-  currentStory=STORY_MISSIONS[Math.floor(Math.random()*STORY_MISSIONS.length)];
+  // Initialize story mission (reset done flags)
+  G.completedStories={};storyCooldown=0;
+  STORY_MISSIONS.forEach(function(m){m._done=false;});
   spawnItems();spawnYetis();spawnTreasures();
+  pickNextStory();
 }
 
 function spawnItems(){
@@ -1963,7 +1965,7 @@ function updateMissions(){
 }
 
 function checkMissions(){
-  if(curMission&&curMission.check()){
+  if(curMission&&!curMission._done&&curMission.check()){
     curMission._done=true;compMissions++;G.score+=50;G.stars=Math.min(3,Math.floor(compMissions/2));
     notify('Mission Complete! +50pts');Audio.play('mission');Shake.add(0.2);
     setTimeout(updateMissions,2000);
@@ -2115,11 +2117,12 @@ let lastTime=0;
 
 function gameLoop(ts){
   if(!G.running)return;
-  const dt=Math.min(ts-lastTime,50);lastTime=ts;G.rt+=dt;
+  var dt=Math.min(ts-lastTime,50);lastTime=ts;G.rt+=dt;
   if(!G.paused){
     update(dt);Shake.update(dt);DayNight.update(dt);
     drawWorld();mmT++;if(mmT%5===0)drawMinimap();
     updateHUD();G.animFrame++;
+    if(storyCooldown>0)storyCooldown=Math.max(0,storyCooldown-dt);
     G.comboTimer=Math.max(0,G.comboTimer-dt);if(G.comboTimer===0)G.combo=0;
     // Music mood
     if(G.waterLevel<25)Audio.setMood('danger');
@@ -2256,14 +2259,38 @@ function updateHUD(){
   document.getElementById('xpFill').style.width=(XP.getProgress()*100)+'%';
   // Guide arrow
   if(Guide.active)Guide.update();
-  // Story mission check
-  if(currentStory&&currentStory.check()){
+  // Story mission check (with cooldown to prevent infinite loop)
+  if(currentStory&&!currentStory._done&&!storyCooldown&&currentStory.check()){
+    currentStory._done=true;
+    G.completedStories=G.completedStories||{};
+    G.completedStories[currentStory.id]=true;
     G.score+=currentStory.reward;G.coins=(G.coins||0)+currentStory.reward;
     XP.add(currentStory.reward);
     notify(currentStory.npc+': Thanks! +'+currentStory.reward+'!');
     Audio.play('mission');Shake.add(0.3);haptic([50,30,80]);
-    currentStory=STORY_MISSIONS[Math.floor(Math.random()*STORY_MISSIONS.length)];
+    storyCooldown=3000;
+    // Pick next story that isn't already completed/true
+    setTimeout(pickNextStory,3000);
   }
+}
+
+var storyCooldown=0;
+function pickNextStory(){
+  var available=STORY_MISSIONS.filter(function(m){
+    if(G.completedStories&&G.completedStories[m.id])return false;
+    if(m.check())return false; // Skip ones already "true" from accumulated state
+    return true;
+  });
+  if(available.length===0){
+    // All done or all already satisfied - reset
+    G.completedStories={};
+    // Reset mission-check state: rely on fresh progress
+    currentStory=null;
+    return;
+  }
+  currentStory=available[Math.floor(Math.random()*available.length)];
+  currentStory._done=false;
+  if(document.getElementById('taskText'))document.getElementById('taskText').textContent=currentStory.npc+': '+currentStory.text;
 }
 
 function switchVehicle(v){
@@ -2331,16 +2358,28 @@ function showTutStep(){
 // ======================================================
 // INPUT
 // ======================================================
+function clearKeys(){G.keys={up:false,down:false,left:false,right:false};}
 function setupInput(){
-  const map={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',KeyW:'up',KeyS:'down',KeyA:'left',KeyD:'right'};
-  addEventListener('keydown',e=>{if(map[e.code]){G.keys[map[e.code]]=true;e.preventDefault();}if(e.code==='Space'){doAction();e.preventDefault();}});
-  addEventListener('keyup',e=>{if(map[e.code])G.keys[map[e.code]]=false;});
-  function hold(dir){const el=document.getElementById('dpad-'+dir);el.addEventListener('touchstart',e=>{e.preventDefault();G.keys[dir]=true;},{passive:false});el.addEventListener('touchend',e=>{e.preventDefault();G.keys[dir]=false;},{passive:false});el.addEventListener('mousedown',()=>G.keys[dir]=true);el.addEventListener('mouseup',()=>G.keys[dir]=false);el.addEventListener('mouseleave',()=>G.keys[dir]=false);}
+  var map={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',KeyW:'up',KeyS:'down',KeyA:'left',KeyD:'right'};
+  addEventListener('keydown',function(e){if(map[e.code]){G.keys[map[e.code]]=true;e.preventDefault();}if(e.code==='Space'){doAction();e.preventDefault();}});
+  addEventListener('keyup',function(e){if(map[e.code])G.keys[map[e.code]]=false;});
+  function hold(dir){var el=document.getElementById('dpad-'+dir);
+    el.addEventListener('touchstart',function(e){e.preventDefault();G.keys[dir]=true;},{passive:false});
+    el.addEventListener('touchend',function(e){e.preventDefault();G.keys[dir]=false;},{passive:false});
+    el.addEventListener('touchcancel',function(e){G.keys[dir]=false;});
+    el.addEventListener('mousedown',function(){G.keys[dir]=true;});
+    el.addEventListener('mouseup',function(){G.keys[dir]=false;});
+    el.addEventListener('mouseleave',function(){G.keys[dir]=false;});}
   hold('up');hold('down');hold('left');hold('right');
-  canvas.addEventListener('touchstart',e=>{e.preventDefault();Audio.resume();handleTouch(e.touches[0]);},{passive:false});
-  canvas.addEventListener('touchmove',e=>{e.preventDefault();handleTouch(e.touches[0]);},{passive:false});
-  canvas.addEventListener('touchend',()=>{G.keys={up:false,down:false,left:false,right:false};},{passive:false});
-  document.addEventListener('click',()=>Audio.resume(),{once:true});
+  canvas.addEventListener('touchstart',function(e){e.preventDefault();Audio.resume();handleTouch(e.touches[0]);},{passive:false});
+  canvas.addEventListener('touchmove',function(e){e.preventDefault();handleTouch(e.touches[0]);},{passive:false});
+  canvas.addEventListener('touchend',function(){clearKeys();},{passive:false});
+  canvas.addEventListener('touchcancel',function(){clearKeys();},{passive:false});
+  // Clear stuck keys when window loses focus
+  addEventListener('blur',clearKeys);
+  addEventListener('focus',clearKeys);
+  document.addEventListener('visibilitychange',function(){if(document.hidden)clearKeys();});
+  document.addEventListener('click',function(){Audio.resume();},{once:true});
 }
 function handleTouch(t){const dx=t.clientX-canvas.getBoundingClientRect().left-canvas.width/2,dy=t.clientY-canvas.getBoundingClientRect().top-canvas.height/2,dz=Math.min(50,canvas.width*0.08);G.keys.up=dy<-dz;G.keys.down=dy>dz;G.keys.left=dx<-dz;G.keys.right=dx>dz;}
 
